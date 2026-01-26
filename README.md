@@ -129,17 +129,4 @@ Built with Tailwind CSS 4
 
 Includes Material Icons
 
-Fully responsive, modern UI foundation
-
-License
-
-This project is open-source and available under the MIT License.
-
-
-If you want, I can also:
-- Add **badges** (Laravel, React, license, etc.)
-- Split it into **Server / Client** README files
-- Tailor it for **GitHub**, **GitLab**, or **Bitbucket**
-- Add **Docker** or **deployment** instructions
-
-Just say the word 🚀
+Fully responsive, modern UI foundation.
