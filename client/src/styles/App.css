@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Branding */
+  --color-primary: oklch(var(--primary));
+  --color-accent: oklch(var(--accent));
+
+  /* Functional UI Colors */
+  --color-main-bg: oklch(var(--bg));         
+  --color-surface: oklch(var(--surface));   
+  --color-main-text: oklch(var(--text));     
+  --color-muted: oklch(var(--text-muted));   
+  --color-border: oklch(var(--border));
+  
+  --shadow-main: var(--shadow);
+}
+
+:root {
+  font-family: 'Poppins', sans-serif;
+  
+  /* LIGHT MODE: Industrial White & Dark Accents */
+  --primary: 20% 0 0;         /* Deep Black-Gray */
+  --accent: 70% 0 0;         
+
+  --bg: 98% 0.005 0;          /* Subtle off-white */
+  --surface: 100% 0 0;        /* Pure white cards */
+  --text: 15% 0 0;            /* Near black text */
+  --text-muted: 50% 0 0;      
+  --border: 90% 0 0;          
+  
+  --shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  /* DARK MODE: Based on the logo's textured background */
+  --bg: 10% 0 0;              /* Matte Black */
+  --surface: 15% 0 0;         /* Elevated Surface */
+  --text: 98% 0 0;            /* High-contrast White */
+  --text-muted: 65% 0 0;      
+  --border: 22% 0 0;          
+  
+  --primary: 100% 0 0;        /* Pure White (Logo Style) */
+  --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  body, html {
+    height: 100vh;
+    width: 100vw;
+    background: var(--bg-bg);
+  }
+
+  #root {
+    height: 100vh;
+    width: 100vw;
+    background: var(--bg-bg);
+  }
+
+  .reveal-step { 
+    opacity: 0; 
+    transform: translateY(50px); 
+    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); 
+  }
+
+  .reveal-visible { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+  
+  .glass-nav {
+    background: rgba(var(--color-surface), 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1.2); opacity: 1; }
+  }
+
+  @keyframes progress-indeterminate {
+    0% { transform: translateX(-100%) scaleX(0.2); }
+    50% { transform: translateX(0%) scaleX(0.5); }
+    100% { transform: translateX(100%) scaleX(0.2); }
+  }
+
+  .animate-progress {
+    animation: progress-indeterminate 1.5s infinite linear;
+  }
+}
