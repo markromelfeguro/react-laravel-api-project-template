@@ -55,7 +55,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     // On success, Laravel sends 'Set-Cookie' header
     // We simply update the local user state
-    setUser(response.data.user);
+    const userData = response.data.data.user;
+    setUser(userData);
     setJustLoggedOut(false);
   };
 

@@ -3,3 +3,4 @@ export * from './MaterialIcon';
 export * from './LoadingSpinner';
 export { default as SkeletonBox } from './SkeletonBox';
 export * from './table/Table';
+export * from './forms';

@@ -24,7 +24,7 @@ const UserService = {
     delete: (slug: string) => 
         handleRequest(AxiosInstance.delete(`/${BASE_PREFIX}/${slug}`), "Failed to delete user"),
 
-    switchTheme: (theme: 'dark' | 'light') => 
+    switchTheme: (theme: 'dark' | 'light' | 'system') => 
         handleRequest(AxiosInstance.post(`/${BASE_PREFIX}/switch-theme`, { theme }), "Failed to sync theme"),
 };
 

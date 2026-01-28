@@ -1,26 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { notify } from "../../../utils/notify";
+import { LoadingSpinner } from "../../../components/ui";
 
 const ProtectedRoute = () => {
-  const { isLoggedIn, justLoggedOut, setJustLoggedOut } = useAuth();
+  
+  const { isLoggedIn, loading, justLoggedOut, setJustLoggedOut } = useAuth();
   const location = useLocation();
+  const hasNotified = useRef(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      if (justLoggedOut) {
-        notify.success("Logout successful.");
-        setJustLoggedOut(false);
-      } else {
-        notify.error("You must be logged in to access this page.");
+    if (!loading && !isLoggedIn) {
+      if (!hasNotified.current) {
+        if (justLoggedOut) {
+          notify.success("Logout successful.");
+          setJustLoggedOut(false);
+        } else {
+          notify.error("You must be logged in to access this page.");
+        }
+        hasNotified.current = true;
       }
     }
-  }, [isLoggedIn, justLoggedOut, setJustLoggedOut]);
+    if (isLoggedIn) {
+      hasNotified.current = false;
+    }
+  }, [isLoggedIn, loading, justLoggedOut, setJustLoggedOut]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
-    // Redirect to login, but save the current location so we can 
-    // send them back after they log in.
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

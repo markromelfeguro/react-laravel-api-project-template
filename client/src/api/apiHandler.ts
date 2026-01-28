@@ -22,11 +22,14 @@ export async function handleRequest<T>(
         const response = await request;
         return returnFullResponse ? response : response.data;
     } catch (error: any) {
-        if (error.response?.status !== 422) {
+        const status = error.response?.status;
+
+        const alreadyHandled = [401, 403, 500, 502, 503, 504].includes(status);
+        
+        if (!alreadyHandled && status !== 422) {
             notify.error(errorMessage);
         }
         
-        console.error(`${errorMessage}:`, error);
         throw error;
     }
 }
