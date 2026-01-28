@@ -1,8 +1,6 @@
 import React, { useState, type ReactNode } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
-import Footer from "./Footer";
-import Breadcrumbs from "../ui/BreadCrumbs";
+import { Navbar, Sidebar, Footer } from "../layouts";
+import BreadCrumbs from "../ui/BreadCrumbs";
 
 interface MainLayoutProps {
   content: ReactNode;
@@ -23,7 +21,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ content }) => {
             />
           )}
           <main className="grow p-4 md:p-6">
-            <Breadcrumbs/>
+            <BreadCrumbs/>
             <div className="mx-auto max-w-7xl mt-3">
               {content}
             </div>

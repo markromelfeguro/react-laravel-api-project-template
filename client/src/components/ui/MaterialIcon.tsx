@@ -7,6 +7,7 @@ interface MaterialIconProps extends React.HTMLAttributes<HTMLElement> {
   type?: IconType;
   size?: number | string;
   color?: string;
+  inlineColor?: string;
 }
 
 export const MaterialIcon: React.FC<MaterialIconProps> = ({
@@ -15,6 +16,7 @@ export const MaterialIcon: React.FC<MaterialIconProps> = ({
   className = '',
   size = 24,
   color,
+  inlineColor,
   style,
   ...rest
 }) => {
@@ -32,7 +34,7 @@ export const MaterialIcon: React.FC<MaterialIconProps> = ({
 
   const inlineStyles: React.CSSProperties = {
     fontSize: typeof size === 'number' ? `${size}px` : size,
-    color: color, 
+    color: inlineColor,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -43,7 +45,7 @@ export const MaterialIcon: React.FC<MaterialIconProps> = ({
 
   return (
     <i 
-      className={`${getIconClassName()} ${className} text-main-text shrink-0 transition-colors duration-200`} 
+      className={`${getIconClassName()} ${className} ${color} shrink-0 transition-colors duration-200`} 
       style={inlineStyles} 
       {...rest}>
       {iconName}

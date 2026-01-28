@@ -21,13 +21,13 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-950 p-4">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-main-bg p-4">
+      <div className="w-full max-w-md bg-surface rounded-xl shadow-xl border border-border p-8">
         <div className="flex flex-col items-center mb-8">
           <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-            <MaterialIcon iconName="lock" className="text-blue-600 dark:text-blue-400" />
+            <MaterialIcon iconName="lock" color="text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Welcome Back</h1>
+          <h1 className="text-2xl text-primary font-bold">Welcome Back</h1>
           <p className="text-gray-500 text-sm">Sign in to your account to continue</p>
         </div>
 

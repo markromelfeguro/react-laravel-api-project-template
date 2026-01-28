@@ -1,6 +1,6 @@
 import React from 'react';
 import { MaterialIcon } from '../MaterialIcon';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner, type SpinnerType } from '../LoadingSpinner';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -10,6 +10,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  loadingType?: SpinnerType;
+  loadingText?: string;
   iconName?: string;
   iconType?: 'filled' | 'outlined' | 'rounded' | 'sharp' | 'two-tone';
   iconPosition?: IconPosition;
@@ -22,6 +24,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     variant = 'primary', 
     size = 'md', 
     isLoading = false, 
+    loadingType = 'circle',
+    loadingText = '',
     iconName, 
     iconType = 'rounded',
     iconPosition = 'left',
@@ -31,12 +35,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ...props 
   }, ref) => {
 
-    const baseStyles = "relative inline-flex items-center justify-center font-bold uppercase tracking-tighter transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:active:scale-100 disabled:cursor-not-allowed rounded-2xl gap-2 overflow-hidden";
+    const baseStyles = "relative inline-flex items-center justify-center font-bold uppercase tracking-tighter transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed rounded-2xl gap-2 overflow-hidden";
 
     const variants = {
-      primary: "bg-primary text-main-bg hover:opacity-90 shadow-main", 
+      
+      primary: "bg-primary text-main-bg hover:opacity-90 shadow-lg", 
       secondary: "bg-surface text-main-text hover:bg-main-bg border border-border shadow-sm", 
-      danger: "bg-red-600 text-white hover:bg-red-700 shadow-main",
+      danger: "bg-red-600 text-white hover:bg-red-700 shadow-lg",
       outline: "border-2 border-primary text-primary hover:bg-primary hover:text-main-bg",
       ghost: "bg-transparent hover:bg-surface text-main-text",
     };
@@ -51,22 +56,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       sm: '14px', md: '18px', lg: '22px',
     };
 
-    const useInheritedColor = ['primary', 'danger', 'outline'].includes(variant);
+    const shouldUseInheritedColor = ['primary', 'danger', 'outline'].includes(variant);
     const widthStyle = fullWidth ? 'w-full' : '';
-    
     const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${widthStyle} ${className}`.trim();
-
-    const renderIcon = () => (
-      !isLoading && iconName && (
-        <MaterialIcon 
-          iconName={iconName} 
-          type={iconType} 
-          size={size === 'sm' ? 14 : 18} 
-          className="text-current flex items-center justify-center" 
-          style={{ color: 'inherit' }}
-        />
-      )
-    );
 
     return (
       <button
@@ -76,20 +68,38 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-inherit rounded-inherit">
+          <div className="absolute inset-0 flex items-center justify-center bg-inherit z-10">
              <LoadingSpinner 
-               size="custom" 
-               customSize={spinnerSizeMap[size]} 
-               color={useInheritedColor ? undefined : 'primary'}
-               className={useInheritedColor ? 'text-current' : ''}
+                size="custom"
+                variant={loadingType}
+                text={loadingText}
+                customSize={spinnerSizeMap[size]} 
+                color={shouldUseInheritedColor ? 'current' : 'primary'}
              />
           </div>
         )}
 
         <div className={`flex items-center gap-2 transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-          {iconPosition === 'left' && renderIcon()}
+          
+          {iconPosition === 'left' && !isLoading && iconName && (
+            <MaterialIcon 
+              iconName={iconName} 
+              type={iconType} 
+              size={size === 'sm' ? 14 : 18} 
+              className="text-current" 
+            />
+          )}
+          
           {children && <span>{children}</span>}
-          {iconPosition === 'right' && renderIcon()}
+          
+          {iconPosition === 'right' && !isLoading && iconName && (
+            <MaterialIcon 
+              iconName={iconName} 
+              type={iconType} 
+              size={size === 'sm' ? 14 : 18} 
+              className="text-current"
+            />
+          )}
         </div>
       </button>
     );

@@ -3,12 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../../features/auth';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../../utils/notify';
 
 import { 
   Button,  
   Input,
+  PasswordInput,
   Checkbox,
 } from '../../../components/ui';
 
@@ -24,7 +25,6 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const { 
     register, 
@@ -44,8 +44,8 @@ export const LoginForm = () => {
     setIsSubmitting(true);
     try {
       await login(data.login_credential, data.password, data.remember_me);
-      navigate('/app/dashboard')
-      notify.success("Login Successfully.");
+      navigate('/app/dashboard');
+      notify.success("Login Successfully. Welcome back.");
     } catch (error: any) {
       if (error.response?.status === 422) {
         const serverErrors = error.response.data.errors;
@@ -64,8 +64,9 @@ export const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
+        
         <Input 
           label="Email Address"
           type="email"
@@ -76,53 +77,42 @@ export const LoginForm = () => {
           fullWidth
         />
 
-        <div className="space-y-2">
-          <Input 
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            iconName="lock"
-            error={errors.password?.message}
-            {...register("password")} 
-            fullWidth
-          />
-          
-          <div className="flex justify-end px-1">
-            <Checkbox 
-              size='sm'
-              label="Show Password"
-              id="show-password"
-              checked={showPassword}
-              onChange={() => setShowPassword(!showPassword)}
-              className="opacity-70 hover:opacity-100 transition-opacity"
-            />
-          </div>
-        </div>
+        <PasswordInput 
+          label="Security Protocol"
+          placeholder="••••••••"
+          iconName="lock"
+          error={errors.password?.message}
+          {...register("password")} 
+          fullWidth
+        />
       </div>
 
-      <div className="flex items-center justify-between px-1">
+      <div className="flex items-center justify-between px-1 pt-1">
         <Checkbox 
-          size='sm'
-          label="Remember me" 
+          size='xs'
+          label="Remember Me" 
           id="remember"
           {...register("remember_me")} 
+          className="opacity-80"
         />
-        
-        <button type="button" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline">
-          Forgot Password?
-        </button>
+        <Link to={"#"}>
+          <span className="text-xs hover:underline font-black uppercase tracking-widest text-primary hover:text-primary-hover transition-colors italic">
+            Forgot password
+          </span>
+        </Link>
       </div>
 
       <Button 
         type="submit" 
         variant="primary" 
         size="md"
-        className="w-full mt-2"
+        className="w-full mt-4"
         isLoading={isSubmitting}
-        iconName="login"
-        iconPosition="right"
-      >
-        Sign In
+        loadingType='loop'
+        loadingText='Logging In...'
+        iconName="vpn_key"
+        iconPosition="right">
+        Login
       </Button>
     </form>
   );

@@ -11,8 +11,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const menuItems = [
     { name: "Dashboard", icon: "dashboard", path: "/app/dashboard" },
-    { name: "Users", icon: "people", path: "/app/users" },
-    { name: "Settings", icon: "settings", path: "/app/settings" },
   ];
 
   return (

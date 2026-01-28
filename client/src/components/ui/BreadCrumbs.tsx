@@ -1,7 +1,7 @@
 import { Link, useLocation, useMatches } from "react-router-dom";
 import { MaterialIcon } from "./MaterialIcon";
 
-const Breadcrumbs = () => {
+const BreadCrumbs = () => {
   const location = useLocation();
   const matches = useMatches();
 
@@ -66,4 +66,4 @@ const Breadcrumbs = () => {
   );
 };
 
-export default Breadcrumbs;
+export default BreadCrumbs;

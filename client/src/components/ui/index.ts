@@ -4,3 +4,7 @@ export * from './LoadingSpinner';
 export { default as SkeletonBox } from './SkeletonBox';
 export * from './table/Table';
 export * from './forms';
+export { default as Modal } from './Modal';
+export { default as BreadCrumbs} from './BreadCrumbs';
+export { default as ProfileDropdown} from './ProfileDropdown';
+export { default as NotificationDropdown} from './NotificationDropdown';

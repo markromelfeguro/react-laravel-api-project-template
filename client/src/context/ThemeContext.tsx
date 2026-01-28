@@ -17,7 +17,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
-
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
@@ -33,12 +32,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
 
-    // Only attempt to sync with DB if the user is actually logged in
     if (isLoggedIn) {
       try {
         await UserService.switchTheme(newDarkMode ? 'dark' : 'light');
       } catch (error) {
-        // We don't necessarily want to toast here to avoid annoying the user
         console.error("Theme sync failed:", error);
       }
     }

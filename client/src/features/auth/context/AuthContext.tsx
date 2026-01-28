@@ -4,6 +4,7 @@ import AuthService from "../api/AuthService";
 interface AuthContextProps {
   user: any;
   login: (login_credential: string, password: string, remember_me: boolean) => Promise<void>;
+  updateUser: (updatedUser: any) => void;
   logout: () => void;
   isLoggedIn: boolean;
   loading: boolean;
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       try {
         const userData = await AuthService.me();
-        setUser(userData);
+        setUser(userData.data);
       } catch (error) {
         // If the cookie is invalid or missing, Laravel returns 401
         // and we ensure the user state is null
@@ -66,10 +67,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Logout request failed, clearing local state anyway.");
     } finally {
-      // Clear user state and cleanup
       setUser(null);
       setJustLoggedOut(true);
     }
+  }, []);
+  
+  const updateUser = useCallback((updatedUser: any) => {
+    setUser(updatedUser);
   }, []);
 
   return (
@@ -77,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         login,
+        updateUser,
         logout,
         isLoggedIn,
         loading,

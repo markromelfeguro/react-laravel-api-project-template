@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class NotificationResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,16 +16,14 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role ?? 'user',
+            'type' => $this->type,
+            'subject' => $this->subject,
+            'message' => $this->message,
+            'data' => $this->data,
+            'action_url' => $this->action_url,
+            'is_read' => $this->is_read,
+            'sent_at' => $this->sent_at->diffForHumans(),
             'created_at' => $this->created_at->toDateTimeString(),
-            'profile' => [
-                'avatar' => $this->userProfile->avatar,
-                'bio' => $this->userProfile->bio,
-                'phone' => $this->userProfile->phone,
-                'theme' => $this->userProfile->theme,
-            ],
         ];
     }
 }
