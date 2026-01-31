@@ -8,3 +8,4 @@ export { default as Modal } from './Modal';
 export { default as BreadCrumbs} from './BreadCrumbs';
 export { default as ProfileDropdown} from './ProfileDropdown';
 export { default as NotificationDropdown} from './NotificationDropdown';
+export * from './FontSizeControl';

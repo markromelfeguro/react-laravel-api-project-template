@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import { 
   Button, 
   MaterialIcon, 
-  LoadingSpinner, 
+  LoadingSpinner,
+  FontSizeControl, 
   SkeletonBox,
   Table, TableHeader, TableBody, TableRow, TableCell,
   Input,
@@ -21,6 +22,7 @@ const Welcome = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(true);
+  const [textSize, setTextSize] = useState(16);
 
   // Animation Refs
   const revealRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -48,12 +50,16 @@ const Welcome = () => {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            <FontSizeControl 
+              value={textSize} 
+              onChange={setTextSize}
+            />
+            <Button variant='ghost' tooltip={`${darkMode ? 'Light Mode' : 'Dark Mode'}`} tooltipPosition='bottom' onClick={toggleDarkMode}>
+              <MaterialIcon iconName={darkMode ? 'light_mode' : 'dark_mode'} size={20} />
+            </Button>
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
-            <button onClick={toggleDarkMode} className="p-2 bg-surface border border-border rounded-xl hover:bg-main-bg transition-colors">
-              <MaterialIcon iconName={darkMode ? 'light_mode' : 'dark_mode'} size={20} />
-            </button>
           </div>
         </div>
       </nav>
