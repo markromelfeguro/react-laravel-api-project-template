@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Traits\ApiResponse;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -23,22 +25,39 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Attempt to authenticate using the 'email' field in the database
+        // Rate Limiting (Prevents Brute Force)
+        $throttleKey = Str::transliterate(Str::lower($request->input('login_credential')).'|'.$request->ip());
+        
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            throw ValidationException::withMessages([
+                'login_credential' => [__('auth.throttle', ['seconds' => $seconds])],
+            ]);
+        }
+
+        //  Attempt Authentication
         if (!Auth::attempt(['email' => $credentials['login_credential'], 'password' => $credentials['password']], $request->boolean('remember_me'))) {
+            
+            // Increment throttle on failure
+            RateLimiter::hit($throttleKey);
+
             throw ValidationException::withMessages([
                 'login_credential' => [__('auth.failed')],
             ]);
         }
 
+        $user = Auth::user();
+
+        RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
         return $this->success([
-            'user' => new UserResource(Auth::user()),
-        ], 'Login successful.');
+            'user' => new UserResource($user),
+        ], 'You have logged in successfully.');
     }
 
     /**
-     * Log the user out of the application.
+     * Logout the user out of the application.
      */
     public function logout(Request $request)
     {
@@ -47,7 +66,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return $this->success(null, 'Logged out successfully.');
+        return $this->success(null, 'You have logged out successfully.');
     }
 
     /**
@@ -55,7 +74,6 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        // Matches AuthService.ts: handleRequest(AxiosInstance.get('/user/auth/me'), ...)
         return new UserResource($request->user());
     }
 }

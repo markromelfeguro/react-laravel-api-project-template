@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import AuthService from "../api/AuthService";
+import { notify } from "../../../utils/notify";
 
 interface AuthContextProps {
   user: any;
@@ -57,13 +58,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // On success, Laravel sends 'Set-Cookie' header
     // We simply update the local user state
     const userData = response.data.data.user;
+    notify.success(response.data.message);
     setUser(userData);
     setJustLoggedOut(false);
   };
 
   const logout = useCallback(async () => {
     try {
-      await AuthService.logout();
+      const response = await AuthService.logout();
+      notify.success(response.message);
     } catch (error) {
       console.error("Logout request failed, clearing local state anyway.");
     } finally {

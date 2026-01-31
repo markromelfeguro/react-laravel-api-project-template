@@ -1,11 +1,23 @@
 import React, { useId } from 'react';
 import { MaterialIcon } from '../MaterialIcon';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   iconName?: string;
   fullWidth?: boolean;
+}
+
+interface PhoneInputProps {
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+  label?: string;
+  error?: string;
+  fullWidth?: boolean;
+  className?: string;
+  disabled?: boolean;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -87,6 +99,50 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
+export const CustomPhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+  ({ label, error, fullWidth = false, className = '', value, onChange, disabled }, ref) => {
+    const id = useId();
+    
+    // Exact styles from your standard Input
+    const baseInputStyles = "w-full bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all duration-300 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10";
+    const borderStyles = error ? 'border-red-500 focus-within:border-red-500' : 'border-border';
+
+    return (
+      <div className={`${fullWidth ? 'w-full' : 'w-72'} flex flex-col gap-1.5`}>
+        {label && (
+          <label htmlFor={id} className="text-xs text-primary font-bold uppercase tracking-widest ml-1">
+            {label}
+          </label>
+        )}
+
+        <div className={`relative flex items-center group ${baseInputStyles} ${borderStyles} ${disabled ? 'opacity-40 cursor-not-allowed' : ''} ${className}`}>
+          <PhoneInput
+            id={id}
+            inputRef={ref}
+            international
+            withCountryCallingCode
+            defaultCountry="PH"
+            value={value}
+            onChange={onChange} // Pass value directly
+            disabled={disabled}
+            smartCaret={true}
+            placeholder="+63 000 0000 0000"
+            className="custom-phone-wrapper PhoneInputInput"
+          />
+        </div>
+
+        {error && (
+          <span className="text-[10px] font-black text-red-500 ml-1 uppercase italic tracking-tighter animate-in fade-in slide-in-from-left-1">
+            {error}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+
+
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }>(
   ({ label, error, className = '', ...props }, ref) => {

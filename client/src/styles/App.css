@@ -99,4 +99,28 @@
   .animate-progress {
     animation: progress-indeterminate 1.5s infinite linear;
   }
+
+  .custom-phone-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .custom-phone-wrapper .PhoneInputInput {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: inherit !important;
+    font-size: 0.875rem !important;
+    width: 100%;
+    margin-left: 0.5rem;
+  }
+  
+  .custom-phone-wrapper .PhoneInputCountry {
+    display: flex;
+    align-items: center;
+    margin-right: 0.25rem;
+  }
+  .PhoneInputCountrySelectArrow {
+    opacity: 0.3;
+  }
 }

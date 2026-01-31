@@ -9,7 +9,8 @@ import {
   SkeletonBox,
 } from "../components/ui";
 import { 
-  Input, 
+  Input,
+  PasswordInput, 
   Textarea, 
   Checkbox, 
   Radio, 
@@ -116,8 +117,10 @@ const Docs = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 bg-primary text-main-bg rounded-2xl font-black uppercase text-center text-[10px]">bg-primary</div>
+              <div className="p-4 bg-accent text-main-bg rounded-2xl font-black uppercase text-center text-[10px]">bg-accent</div>
               <div className="p-4 bg-surface text-main-text border border-border rounded-2xl font-black uppercase text-center text-[10px]">bg-surface</div>
               <div className="p-4 bg-main-bg text-main-text border border-border rounded-2xl font-black uppercase text-center text-[10px]">bg-main-bg</div>
+              <div className="p-4 bg-main-text/20 text-main-text rounded-2xl font-black uppercase text-center text-[10px]">text-main-text</div>
               <div className="p-4 bg-muted/20 text-muted rounded-2xl font-black uppercase text-center text-[10px]">text-muted</div>
             </div>
           </div>
@@ -135,13 +138,13 @@ const Docs = () => {
                 <div className="flex flex-wrap gap-4">
                   <Button variant="primary">Primary</Button>
                   <Button variant="outline" iconName="add">Icon Support</Button>
-                  <Button variant="danger" isLoading={isBtnLoading} onClick={() => { setIsBtnLoading(true); setTimeout(() => setIsBtnLoading(false), 2000); }}>Loading Demo</Button>
+                  <Button variant="danger" isLoading={isBtnLoading} loadingType="loop" loadingText="Loading..." onClick={() => { setIsBtnLoading(true); setTimeout(() => setIsBtnLoading(false), 2000); }}>Loading Demo</Button>
                 </div>
                 <p className="text-xs text-muted italic pt-2">
                   <strong>When to use:</strong> Use <code>Button</code> for any user-triggered action, such as form submissions, navigation, or state toggles. Use <code>isLoading</code> to prevent double submissions during async operations.
                 </p>
               </div>
-              <UsageBlock code={`<Button \n  variant="primary" \n  iconName="save" \n  isLoading={false}\n>\n  Label\n</Button>`} />
+              <UsageBlock code={`<Button\n\tvariant="primary"\n\ticonName="save"\n\tisLoading={false}\n\tloadingType="circle"\n\tloadingText="Loading..."\n>\n  Label\n</Button>`} />
             </div>
             <div className="bg-surface p-10 rounded-[3rem] border border-border space-y-8">
               <div className="space-y-2">
@@ -153,7 +156,7 @@ const Docs = () => {
                   <strong>When to use:</strong> Use <code>MaterialIcon</code> to provide visual context to text or as standalone triggers. Supports multiple styles including rounded and outlined.
                 </p>
               </div>
-              <UsageBlock code={`<MaterialIcon \n  iconName="bolt" \n  type="rounded" \n  size={40} \n/>`} />
+              <UsageBlock code={`<MaterialIcon\n\ticonName="bolt"\n\ttype="rounded"\n\tsize={40}\n/>`} />
             </div>
           </div>
         </section>
@@ -177,6 +180,8 @@ const Docs = () => {
                 </div>
                 <Input label="Authentication" iconName="key" placeholder="Enter key..." fullWidth />
                 <UsageBlock code={`<Input \n  label="Label" \n  iconName="lock" \n  placeholder="..." \n  error="Message" \n/>`} />
+                <PasswordInput label="Password" placeholder="••••••••" iconName="lock" fullWidth/>
+                <UsageBlock code={`\n<PasswordInput\n\tlabel="Password"\n\tplaceholder="••••••••"\n\ticonName="lock"\n/>`}/>
                 <Textarea label="Notes" placeholder="Enter logs..." />
                 <UsageBlock code={`<Textarea \n  label="Notes" \n  placeholder="..." \n/>`} />
               </div>
@@ -189,8 +194,8 @@ const Docs = () => {
                 </div>
                 <div className="flex gap-10">
                   <div className="space-y-4">
-                    <Checkbox label="Active Mode" checked />
-                    <Radio label="Option A" name="demo" checked />
+                    <Checkbox label="Active Mode" />
+                    <Radio label="Option A" name="demo" />
                     <Radio label="Option B" name="demo" />
                   </div>
                   <div className="flex-1 space-y-6">

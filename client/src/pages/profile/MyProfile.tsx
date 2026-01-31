@@ -7,7 +7,8 @@ import { notify } from "../../utils/notify";
 import { 
   MaterialIcon, 
   Button, 
-  Input, 
+  Input,
+  CustomPhoneInput,
   Textarea, 
   FileUpload,
   Modal,
@@ -148,12 +149,10 @@ const MyProfile = () => {
                 error={errors.name?.[0]}
                 fullWidth 
               />
-              <Input 
+             <CustomPhoneInput 
                 label="Contact Number"
-                iconName="smartphone" 
                 value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                placeholder="+63 000 000 0000"
+                onChange={(value) => setFormData({ ...formData, phone: value || "" })}
                 error={errors.phone?.[0]}
                 fullWidth 
               />

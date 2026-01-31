@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { useAuth } from '../../../features/auth';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { notify } from '../../../utils/notify';
 
 import { 
   Button,  
@@ -45,7 +44,6 @@ export const LoginForm = () => {
     try {
       await login(data.login_credential, data.password, data.remember_me);
       navigate('/app/dashboard');
-      notify.success("Login Successfully. Welcome back.");
     } catch (error: any) {
       if (error.response?.status === 422) {
         const serverErrors = error.response.data.errors;
@@ -68,17 +66,17 @@ export const LoginForm = () => {
       <div className="space-y-4">
         
         <Input 
-          label="Email Address"
+          label="Email"
           type="email"
-          placeholder="your@email.com"
+          placeholder="mark@example.com"
           iconName="mail"
           error={errors.login_credential?.message}
           {...register("login_credential")} 
           fullWidth
         />
 
-        <PasswordInput 
-          label="Security Protocol"
+        <PasswordInput
+          label="Password"
           placeholder="••••••••"
           iconName="lock"
           error={errors.password?.message}

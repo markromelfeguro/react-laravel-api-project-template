@@ -14,7 +14,6 @@ const ProtectedRoute = () => {
     if (!loading && !isLoggedIn) {
       if (!hasNotified.current) {
         if (justLoggedOut) {
-          notify.success("Logout successful.");
           setJustLoggedOut(false);
         } else {
           notify.error("You must be logged in to access this page.");
