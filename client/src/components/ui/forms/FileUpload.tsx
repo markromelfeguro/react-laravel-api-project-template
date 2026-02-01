@@ -3,6 +3,7 @@ import { MaterialIcon } from '../MaterialIcon';
 
 interface FileUploadProps {
   label: string;
+  name?: string;
   accept?: string;
   multiple?: boolean;
   onFileSelect: (files: File[]) => void;
@@ -12,7 +13,8 @@ interface FileUploadProps {
 }
 
 export const FileUpload = ({ 
-  label, 
+  label,
+  name = "", 
   accept, 
   multiple = false, 
   onFileSelect, 
@@ -97,7 +99,7 @@ export const FileUpload = ({
           ${isUploading ? 'cursor-not-allowed opacity-80' : 'active:scale-95'}
         `}
       >
-        <input type="file" ref={fileInputRef} className="hidden" accept={accept} multiple={multiple} onChange={(e) => processFiles(e.target.files)} />
+        <input type="file" ref={fileInputRef} name={name} className="hidden" accept={accept} multiple={multiple} onChange={(e) => processFiles(e.target.files)} />
 
         {/* IMAGE PREVIEW LAYER */}
         {preview && (

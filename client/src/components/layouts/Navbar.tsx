@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import { MaterialIcon, NotificationDropdown, ProfileDropdown } from "../ui";
+import { MaterialIcon, NotificationDropdown, ProfileDropdown, Image, Button } from "../ui";
 import { useAuth } from "../../features/auth";
 import BrandLogo from "../../assets/Logo MRF.png";
 
@@ -19,13 +19,14 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start">
             {/* Mobile Sidebar Toggle */}
-            <button
+            <Button
+              variant="ghost"
               onClick={onMenuClick}
               className="p-2 mr-2 text-muted rounded-lg sm:hidden hover:bg-main-bg focus:outline-none">
               <MaterialIcon iconName="menu" />
-            </button>
+            </Button>
             <Link to="/app/dashboard" className="flex gap-3 items-center">
-              <img src={BrandLogo} alt="Brand Logo" className="w-8 h-8 object-contain" />
+              <Image src={BrandLogo} alt="Brand Logo" aspectRatio="aspect-square" containerClassName="max-h-8 max-w-8"/>
               <span className="text-main-text font-black text-lg tracking-tighter uppercase italic hidden sm:block">MRF Project Template</span>
             </Link>
           </div>

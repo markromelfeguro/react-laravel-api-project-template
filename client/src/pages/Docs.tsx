@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { 
-  MaterialIcon, 
-  Button, 
+  MaterialIcon,
+  Badge, 
+  Button,
   Table, TableHeader, TableBody, TableRow, TableCell,
-  LoadingSpinner, 
+  LoadingSpinner,
+  Image, 
   SkeletonBox,
 } from "../components/ui";
 import { 
@@ -16,7 +18,9 @@ import {
   Radio, 
   FileUpload, 
   MultiSelect, 
-  SearchInput 
+  SearchInput,
+  DatePicker,
+  DateTimePicker,
 } from "../components/ui/forms";
 import { notify } from "../utils/notify";
 
@@ -33,6 +37,33 @@ const Docs = () => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [showSkeleton, setShowSkeleton] = useState(true);
 
+  //DATE PICKER EXAMPLE
+  type RentalRange = {
+    start: Date | null;
+    end: Date | null;
+  };
+
+  const getDefaultRentalRange = (): RentalRange => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    return {
+      start: new Date(year, month, 1),
+      end: new Date(year, month, 10),
+    };
+  };
+
+  const [rental, setRental] = useState<RentalRange>(getDefaultRentalRange);
+
+  const [birthDate, setBirthDate] = useState<Date | null>(
+    new Date(2000, 9, 16)
+  );
+
+  //DATE TIME PICKER EXAMPLE
+  const [appointment, setAppointment] = useState(new Date());
+
+  // FILE UPLOAD EXAMPLE 
   const simulateUpload = (type: 'single' | 'multi') => {
     if (type === 'single') {
       setIsSingleUploading(true);
@@ -73,7 +104,7 @@ const Docs = () => {
   }, [multiProgress, isMultiUploading]);
 
   const UsageBlock = ({ code }: { code: string }) => (
-    <pre className="bg-main-bg border border-border p-4 rounded-2xl overflow-x-auto text-[11px] font-mono italic text-main-text leading-relaxed">
+    <pre className="bg-main-bg border border-border p-4 rounded-2xl overflow-x-auto text-xs font-mono italic text-main-text leading-relaxed">
       {code}
     </pre>
   );
@@ -184,6 +215,145 @@ const Docs = () => {
                 <UsageBlock code={`\n<PasswordInput\n\tlabel="Password"\n\tplaceholder="••••••••"\n\ticonName="lock"\n/>`}/>
                 <Textarea label="Notes" placeholder="Enter logs..." />
                 <UsageBlock code={`<Textarea \n  label="Notes" \n  placeholder="..." \n/>`} />
+                <hr/>
+                <div className="flex flex-col gap-1">
+                  <strong>Date Picker</strong>
+                  <p>
+                    The DatePicker is a lightweight control for selecting dates without a time element. It is ideal for birthdays, identity documents, or rental durations.
+                    you can use the range mode to let customers select their rental "Check-in" and "Check-out" dates while automatically blocking past dates and specific holidays.
+                  </p>
+                  <div className="flex gap-3">
+                    <DatePicker 
+                      mode="range" 
+                      label="Rental Duration" 
+                      startDate={rental.start} 
+                      endDate={rental.end} 
+                      disablePastDates={true} 
+                      disabledDates={[new Date(2026, 1, 14)]} 
+                      onChange={(data) => setRental({ start: data.start ?? null, end: data.end ?? null })} 
+                    />
+                  </div>
+                  <UsageBlock code={`Example:
+
+import { 
+  DatePicker,
+} from "../components/ui/forms";
+
+
+type RentalRange = {
+  start: Date | null;
+  end: Date | null;
+};
+
+const [rental, setRental] = useState<RentalRange>({
+  start: new Date(2026, 0, 31),
+  end: new Date(2026, 1, 10),
+});
+
+<DatePicker 
+  mode="range" 
+  label="Rental Duration" 
+  startDate={rental.start} 
+  endDate={rental.end} 
+  disablePastDates={true} // Disabled All past dates
+  disabledDates={[new Date(2026, 1, 14, 2026)]} // Disabled Selected Date (February 14)
+  onChange={(data) => setRental({ start: data.start ?? null, end: data.end ?? null })} 
+/> `} 
+                  />
+                  <p>
+                    Use the single mode for static dates like birthdays.
+                  </p>
+                  <DatePicker 
+                    mode="single" 
+                    label="Date of Birth" 
+                    selectedDate={birthDate} 
+                    onChange={(data) => setBirthDate(data.date ?? null)} 
+                  />
+                  <UsageBlock code={`
+
+import { 
+  DatePicker,
+} from "../components/ui/forms";
+
+const [birthDate, setBirthDate] = useState(new Date());
+
+<DatePicker 
+  mode="single" 
+  label="Date of Birth" 
+  selectedDate={birthDate} 
+  onChange={(data) => setBirthDate(data.date)} 
+/> `} />
+                </div>
+                <hr/>
+                <div className="flex flex-col gap-1">
+                  <strong>Date Time Picker</strong>
+                  <p>
+                    Used for platforms that handle booking services at specific times. It allows certain time slots—such as lunch breaks to be disabled.
+                  </p>
+                  <div className="flex gap-3">
+                    <DateTimePicker 
+                      mode="single" 
+                      label="Book Appointment" 
+                      selectedDate={appointment} 
+                      disabledTimes={[ { hour: '12', minute: '30', ampm: 'PM' }]} 
+                      onChange={(data) => setAppointment(data.date)} 
+                    />
+                    <DateTimePicker 
+                      mode="range"
+                      label="Reservation" 
+                      startDate={rental.start}   
+                      endDate={rental.end}  
+                      onChange={(data) => setRental({ start: data.start ?? null, end: data.end ?? null })}
+                    />
+                  </div>
+                  <UsageBlock code={`Example:
+
+import { 
+  Date Time Picker,
+} from "../components/ui/forms";
+                  
+const [appointment, setAppointment] = useState(new Date());
+
+<DateTimePicker 
+  mode="single" 
+  label="Book Appointment" 
+  selectedDate={appointment} 
+  disabledTimes={[ { hour: '12', minute: '00', ampm: 'PM' }]} 
+  onChange={(data) => setAppointment(data.date)} 
+/> 
+
+---------
+import { 
+  Date Time Picker,
+} from "../components/ui/forms";
+
+type RentalRange = {
+  start: Date | null;
+  end: Date | null;
+};
+
+const getDefaultRentalRange = (): RentalRange => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  return {
+    start: new Date(year, month, 1),
+    end: new Date(year, month, 10),
+  };
+};
+
+const [rental, setRental] = useState<RentalRange>(getDefaultRentalRange);
+
+<DateTimePicker 
+  mode="range"
+  label="Reservation" 
+  startDate={rental.start}   
+  endDate={rental.end}
+  onChange={(data) => setRental({ start: data.start ?? null, end: data.end ?? null })} 
+/>
+`} />
+                </div>
               </div>
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -301,21 +471,57 @@ const Docs = () => {
                   <TableRow>
                     <TableCell isHeader>Module</TableCell>
                     <TableCell isHeader>Value</TableCell>
+                    <TableCell isHeader>Badge</TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow onClick={() => {}}>
                     <TableCell className="font-bold uppercase italic">BreadCrumbs</TableCell>
                     <TableCell>Automatic</TableCell>
+                    <TableCell>
+                      <Badge variant="success">
+                        Success
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                   <TableRow onClick={() => {}}>
                     <TableCell className="font-bold uppercase italic">Integrity</TableCell>
                     <TableCell>100%</TableCell>
+                    <TableCell>
+                      <Badge variant="warning">
+                        Warning
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </div>
             <UsageBlock code={`<Table>\n  <TableHeader>\n    <TableRow>\n      <TableCell isHeader>...</TableCell>\n    </TableRow>\n  </TableHeader>\n  <TableBody>\n    <TableRow onClick={() => {}}>\n      <TableCell>...</TableCell>\n    </TableRow>\n  </TableBody>\n</Table>`} />
+            <UsageBlock code={` import { Badge } from "../components/ui";\n// variants = 'brand' | 'alternative' | 'gray' | 'danger' | 'success' | 'warning'\n<Badge variant="brand">Verified</Badge>`} />
+          </div>
+        </section>
+        
+        <section className="pb-20">
+          <div className="flex items-center gap-3 mb-6">
+            <MaterialIcon iconName="image" className="text-primary" size={40} />
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter max-h-">06. Image</h2>
+          </div>
+          <div className="space-y-6">
+              <p>
+                Use the aspect-video ratio for high-quality resort photos. The lazy loading ensures the page remains fast even with many images.
+              </p>
+              
+                <Image src="./" alt="Image" aspectRatio="aspect-square" containerClassName="max-h-32 max-w-32"/>
+              
+              <UsageBlock code={` import { Image } from "../components/ui";\n<Image src="yoursource" alt="Image" aspectRatio="aspect-square" containerClassName="shadow-main" /> `} />
+              <p>
+                aspect-auto	- Original	Default; uses the image's natural dimensions.<br></br>
+                aspect-square	- 1 / 1	Profile pictures, avatars, or grid thumbnails.<br></br>
+                aspect-video - 16 / 9	Resort banners (Ivisan Getaways) or video placeholders.<br></br>
+                aspect-[3/4] - 3 / 4	Portrait fashion photography (Gown Gallera catalog).<br></br>
+                aspect-[4/3] -	4 / 3	Standard digital camera photos or blog post cards.<br></br>
+                aspect-[21/9]	- 21 / 9	Ultra-wide cinematic banners for landing pages.
+              </p>
           </div>
         </section>
       </div>

@@ -125,7 +125,8 @@ const MyProfile = () => {
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Visual Assets</h3>
             
             <FileUpload 
-              label="Avatar" 
+              label="Avatar"
+              name="avatar"
               onFileSelect={(files) => setFormData({...formData, avatar: files[0]})}
               accept="image/*"
               error={errors.avatar?.[0]}
@@ -142,7 +143,8 @@ const MyProfile = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Input 
-                label="Full Name" 
+                label="Full Name"
+                name="name"
                 iconName="badge" 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
@@ -151,6 +153,7 @@ const MyProfile = () => {
               />
              <CustomPhoneInput 
                 label="Contact Number"
+                name="phone"
                 value={formData.phone}
                 onChange={(value) => setFormData({ ...formData, phone: value || "" })}
                 error={errors.phone?.[0]}
@@ -159,7 +162,8 @@ const MyProfile = () => {
             </div>
 
             <Textarea 
-              label="Professional Bio" 
+              label="Professional Bio"
+              name="bio"
               placeholder="Tell us about your expertise..." 
               value={formData.bio}
               onChange={(e) => setFormData({...formData, bio: e.target.value})}

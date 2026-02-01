@@ -11,10 +11,11 @@ interface SearchInputProps {
   suggestions: string[];
   onSelect: (value: string) => void;
   label?: string;
+  name?: string;
   placeholder?: string;
 }
 
-export const SearchInput = ({ suggestions, onSelect, label, placeholder }: SearchInputProps) => {
+export const SearchInput = ({ suggestions, onSelect, label, name, placeholder }: SearchInputProps) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +38,7 @@ export const SearchInput = ({ suggestions, onSelect, label, placeholder }: Searc
     <div ref={containerRef} className="relative w-full">
       <Input 
         label={label}
+        name={name}
         placeholder={placeholder}
         iconName="search" 
         value={query} 
@@ -68,12 +70,13 @@ export const SearchInput = ({ suggestions, onSelect, label, placeholder }: Searc
 // --- MULTI-SELECT DROPDOWN ---
 interface MultiSelectProps {
   label?: string;
+  name?: string;
   options: { value: string; label: string }[];
   selectedValues: string[];
   onChange: (values: string[]) => void;
 }
 
-export const MultiSelect = ({ label, options, selectedValues, onChange }: MultiSelectProps) => {
+export const MultiSelect = ({ label, name, options, selectedValues, onChange }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -111,7 +114,8 @@ export const MultiSelect = ({ label, options, selectedValues, onChange }: MultiS
               onClick={() => toggleOption(opt.value)}
             >
               <Checkbox 
-                label={opt.label} 
+                label={opt.label}
+                name={name} 
                 checked={selectedValues.includes(opt.value)} 
                 onChange={() => {}}
               />

@@ -2,11 +2,13 @@ import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
-import { MaterialIcon } from '../ui';
+import { MaterialIcon, Image } from '../ui';
 import type { User } from '../../features/users/types/user.types';
+import ChangePasswordModal from '../../features/auth/components/ChangePasswordModal';
 
 const ProfileDropdown = ({ user }: { user: User }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
@@ -21,10 +23,10 @@ const ProfileDropdown = ({ user }: { user: User }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center w-10 h-10 rounded-2xl bg-surface border border-border hover:border-primary transition-all duration-200 focus:outline-none overflow-hidden group shadow-main">
         {avatarUrl && !imgError ? (
-          <img
+          <Image
             src={avatarUrl}
             alt={user.name}
-            className="w-full h-full object-cover transition-transform group-hover:scale-110"
+            aspectRatio='aspect-square'
             onError={() => setImgError(true)}
           />
         ) : (
@@ -39,10 +41,10 @@ const ProfileDropdown = ({ user }: { user: User }) => {
           <div className="px-5 py-4 flex items-center gap-4 bg-main-bg/30 rounded-t-3xl border-b border-border">
              <div className="w-12 h-12 rounded-2xl bg-primary text-surface flex items-center justify-center font-black italic text-xl shadow-main">
                 {avatarUrl && !imgError ? (
-                  <img
+                  <Image
                   src={avatarUrl}
                     alt={user.name}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                    aspectRatio='aspect-square'
                     onError={() => setImgError(true)}
                   />
                 ) : (
@@ -67,6 +69,13 @@ const ProfileDropdown = ({ user }: { user: User }) => {
               <span className="font-medium">My Profile</span>
             </Link>
           </div>
+
+          <div className="py-2">
+            <button onClick={() => {setIsChangePasswordOpen(true); setIsOpen(false)}} className="flex items-center w-full gap-3 px-5 py-3 text-sm text-main-text hover:bg-main-bg transition-colors group">
+              <MaterialIcon iconName="key" className="text-muted group-hover:text-primary transition-colors" />
+              <span className="font-medium">Change Password</span>
+            </button>
+          </div>
           
           <div className="py-2">
             <Link 
@@ -88,6 +97,10 @@ const ProfileDropdown = ({ user }: { user: User }) => {
           </div>
         </div>
       )}
+      <ChangePasswordModal 
+        isOpen={isChangePasswordOpen} 
+        onClose={() => setIsChangePasswordOpen(false)} 
+      />
     </div>
   );
 };

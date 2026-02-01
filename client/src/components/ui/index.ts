@@ -1,7 +1,9 @@
 export * from './button/Button';
+export * from './Badge';
 export * from './MaterialIcon';
 export * from './LoadingSpinner';
 export { default as SkeletonBox } from './SkeletonBox';
+export * from './Image';
 export * from './table/Table';
 export * from './forms';
 export { default as Modal } from './Modal';

@@ -5,6 +5,7 @@ import 'react-phone-number-input/style.css';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  name?: string;
   error?: string;
   iconName?: string;
   fullWidth?: boolean;
@@ -14,6 +15,7 @@ interface PhoneInputProps {
   value: string | undefined;
   onChange: (value: string | undefined) => void;
   label?: string;
+  name?: string;
   error?: string;
   fullWidth?: boolean;
   className?: string;
@@ -21,7 +23,7 @@ interface PhoneInputProps {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, iconName, fullWidth = false, className = '', ...props }, ref) => {
+  ({ label, name, error, iconName, fullWidth = false, className = '', ...props }, ref) => {
     const id = useId();
     const baseInputStyles = "w-full bg-surface text-main-text border-border placeholder:text-muted rounded-2xl border-2 px-4 py-3 text-sm transition-all duration-300 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-40 disabled:cursor-not-allowed";
 
@@ -30,7 +32,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && <label htmlFor={id} className="text-xs text-primary font-bold uppercase tracking-widest ml-1">{label}</label>}
         <div className="relative flex items-center">
           {iconName && <div className="absolute left-4 text-muted"><MaterialIcon iconName={iconName} size={18} /></div>}
-          <input id={id} ref={ref} className={`${baseInputStyles} ${iconName ? 'pl-11' : ''} ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`} {...props} />
+          <input id={id} ref={ref} name={name} className={`${baseInputStyles} ${iconName ? 'pl-11' : ''} ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`} {...props} />
         </div>
         {error && <span className="text-[10px] font-bold text-red-500 ml-1 uppercase">{error}</span>}
       </div>
@@ -39,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, iconName = "lock", fullWidth = false, className = '', ...props }, ref) => {
+  ({ label, name, error, iconName = "lock", fullWidth = false, className = '', ...props }, ref) => {
     const id = useId();
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -66,6 +68,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             id={id}
             ref={ref}
+            name={name}
             type={showPassword ? "text" : "password"}
             className={`
               ${baseInputStyles} 
@@ -101,7 +104,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 export const CustomPhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
-  ({ label, error, fullWidth = false, className = '', value, onChange, disabled }, ref) => {
+  ({ label, name, error, fullWidth = false, className = '', value, onChange, disabled }, ref) => {
     const id = useId();
     
     // Exact styles from your standard Input
@@ -120,11 +123,12 @@ export const CustomPhoneInput = React.forwardRef<HTMLInputElement, PhoneInputPro
           <PhoneInput
             id={id}
             inputRef={ref}
+            name={name}
             international
             withCountryCallingCode
             defaultCountry="PH"
             value={value}
-            onChange={onChange} // Pass value directly
+            onChange={onChange}
             disabled={disabled}
             smartCaret={true}
             placeholder="+63 000 0000 0000"
@@ -145,12 +149,12 @@ export const CustomPhoneInput = React.forwardRef<HTMLInputElement, PhoneInputPro
 
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }>(
-  ({ label, error, className = '', ...props }, ref) => {
+  ({ label, name, error, className = '', ...props }, ref) => {
     const id = useId();
     return (
       <div className="w-full flex flex-col gap-1.5">
         {label && <label htmlFor={id} className="text-xs text-primary font-bold uppercase tracking-widest ml-1">{label}</label>}
-        <textarea id={id} ref={ref} className={`w-full bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-30 transition-all duration-300 ${error ? 'border-red-500' : ''} ${className}`} {...props} />
+        <textarea id={id} ref={ref} name={name} className={`w-full bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-30 transition-all duration-300 ${error ? 'border-red-500' : ''} ${className}`} {...props} />
         {error && <span className="text-[10px] font-bold text-red-500 ml-1 uppercase">{error}</span>}
       </div>
     );

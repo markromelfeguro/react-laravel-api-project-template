@@ -5,6 +5,7 @@ type ComponentSize = 'xs' | 'sm' | 'md' | 'lg' | 'custom';
 
 interface BaseProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label: string;
+  name?: string;
   size?: ComponentSize;
   customSize?: string;
 }
@@ -25,7 +26,8 @@ const getInnerSize = (size: ComponentSize) => {
 };
 
 export const Checkbox = ({ 
-  label, 
+  label,
+  name = "",
   size = 'md', 
   customSize, 
   className = '', 
@@ -38,7 +40,8 @@ export const Checkbox = ({
     <label className={`flex items-center gap-3 cursor-pointer group ${className}`}>
       <div className="relative flex items-center justify-center">
         <input 
-          type="checkbox" 
+          type="checkbox"
+          name={name}
           className={`peer appearance-none border-2 border-primary rounded-sm bg-surface checked:bg-accent checked:border-primary transition-all duration-300 ${dimensionClass}`} 
           {...props} 
         />

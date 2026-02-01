@@ -101,8 +101,7 @@ const Modal: React.FC<ModalProps> = ({
                       <Button 
                         variant={secondaryAction.variant || "secondary"} 
                         onClick={secondaryAction.onClick}
-                        size="md"
-                      >
+                        size="md">
                         {secondaryAction.label}
                       </Button>
                     )}

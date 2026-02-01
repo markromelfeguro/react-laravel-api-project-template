@@ -37,6 +37,13 @@ const AuthService = {
      */
     me: () => 
         handleRequest(AxiosInstance.get('/user/auth/me'), "Failed to fetch user session"),
+
+    changePassword: (data: any) => 
+        handleRequest(
+            AxiosInstance.post('/user/auth/change-password', data), 
+            "Failed to update password", 
+            false
+        ),
 };
 
 export default AuthService;

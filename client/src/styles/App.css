@@ -15,6 +15,15 @@
   --color-border: oklch(var(--border));
   
   --shadow-main: var(--shadow);
+
+  /* Status colors (derived, not loud) */
+  --color-success: oklch(72% 0.06 150);
+  --color-success-bg: oklch(96% 0.02 150);
+  --color-success-border: oklch(88% 0.03 150);
+
+  --color-danger: oklch(70% 0.07 25);
+  --color-danger-bg: oklch(96% 0.02 25);
+  --color-danger-border: oklch(88% 0.03 25);
 }
 
 :root {
@@ -43,6 +52,12 @@
   
   --primary: 100% 0 0;        /* Pure White (Logo Style) */
   --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+
+  --color-success-bg: oklch(18% 0.04 150);
+  --color-success-border: oklch(30% 0.05 150);
+
+  --color-danger-bg: oklch(18% 0.05 25);
+  --color-danger-border: oklch(30% 0.06 25);
 }
 
 @layer base {
@@ -84,6 +99,19 @@
   .text-glow {
     text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
   }
+
+  .available {
+    color: var(--color-success);
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+  }
+
+  .unavailable {
+    color: var(--color-danger);
+    background-color: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+  }
+
 
   @keyframes wave {
     0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
