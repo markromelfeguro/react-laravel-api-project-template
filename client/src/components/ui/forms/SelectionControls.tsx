@@ -4,7 +4,7 @@ import { MaterialIcon } from '../MaterialIcon';
 type ComponentSize = 'xs' | 'sm' | 'md' | 'lg' | 'custom';
 
 interface BaseProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  label: string;
+  label?: string;
   name?: string;
   size?: ComponentSize;
   customSize?: string;

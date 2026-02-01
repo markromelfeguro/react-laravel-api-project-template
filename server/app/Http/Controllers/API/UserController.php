@@ -15,6 +15,43 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     use ApiResponse;
+    
+    public function index(Request $request)
+    {
+        $query = User::query()->whereNot('id', auth()->id());
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            (new User)->recordSearch($search);
+            
+            $normalizedSearch = preg_replace('/[^A-Za-z0-9]/', '', $search);
+
+            $query->where(function($q) use ($search, $normalizedSearch) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                
+                // Advanced normalized search: 
+                // Strips - . and spaces from the column before comparing
+                ->orWhereRaw("REPLACE(REPLACE(REPLACE(name, ' ', ''), '-', ''), '.', '') LIKE ?", ["%{$normalizedSearch}%"])
+                ->orWhereRaw("REPLACE(REPLACE(REPLACE(email, ' ', ''), '-', ''), '.', '') LIKE ?", ["%{$normalizedSearch}%"]);
+            });
+        }
+
+        $limit = $request->query('limit', 10);
+        $users = $query->latest()->paginate($limit);
+
+        $suggestions = auth()->user()->searches()
+            ->latest('updated_at')
+            ->take(5)
+            ->pluck('keyword');
+
+        return $this->success([
+            'users' => $users->items(),
+            'suggestions' => $suggestions,
+            'total' => $users->total(),
+        ], 'Data retrieved successfully.');
+    }
 
     /**
      * Update the authenticated user's profile information.

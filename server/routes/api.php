@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\SearchHistoryController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,9 +21,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(UserController::class)->prefix('users')->group( function () {
+        Route::get('/', 'index');
         Route::put('{slug}/update', 'update');
         Route::delete('{slug}/delete', 'destroy');
         Route::post('switch-theme', 'switchTheme');
+    });
+
+    Route::controller(SearchHistoryController::class)->prefix('user-searches')->group(function () {
+        Route::delete('clear',  'clear');
+        Route::delete('{keyword}',  'destroy');
     });
 
     Route::controller(NotificationController::class)->prefix('notifications')->group( function () {

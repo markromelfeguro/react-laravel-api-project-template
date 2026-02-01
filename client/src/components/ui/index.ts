@@ -11,3 +11,4 @@ export { default as BreadCrumbs} from './BreadCrumbs';
 export { default as ProfileDropdown} from './ProfileDropdown';
 export { default as NotificationDropdown} from './NotificationDropdown';
 export * from './FontSizeControl';
+export { default as DisplayContainer } from './DisplayContainer';

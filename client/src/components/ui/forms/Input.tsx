@@ -1,7 +1,9 @@
-import React, { useId } from 'react';
+import React, { useId, useState, useEffect, useRef, useMemo } from 'react';
 import { MaterialIcon } from '../MaterialIcon';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
+import { useDebounce } from '../../../hooks/useDebounceHook';
+import { useOnClickOutside } from '../../../hooks/useOnClickOutside';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -9,17 +11,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   iconName?: string;
   fullWidth?: boolean;
-}
-
-interface PhoneInputProps {
-  value: string | undefined;
-  onChange: (value: string | undefined) => void;
-  label?: string;
-  name?: string;
-  error?: string;
-  fullWidth?: boolean;
-  className?: string;
-  disabled?: boolean;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -40,6 +31,127 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
+// --- SEARCH INPUT WITH SUGGESTIONS ---
+interface SearchInputProps {
+  suggestions: string[];
+  onSelect: (value: string) => void;
+  onDeleteSuggestion?: (value: string) => void;
+  onClearHistory?: () => void; // New prop
+  label?: string;
+  name?: string;
+  placeholder?: string;
+}
+
+export const SearchInput = ({ 
+  suggestions, 
+  onSelect, 
+  onDeleteSuggestion, 
+  onClearHistory,
+  label, 
+  name, 
+  placeholder 
+}: SearchInputProps) => {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const debouncedQuery = useDebounce(query, 600);
+
+  useEffect(() => {
+    if (debouncedQuery !== undefined) {
+      onSelect(debouncedQuery);
+    }
+  }, [debouncedQuery]);
+
+  useOnClickOutside(containerRef, () => setIsOpen(false));
+
+  const displaySuggestions = useMemo(() => {
+    if (!query) return suggestions; 
+    return suggestions.filter(item => 
+      item.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [suggestions, query]);
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <div className="relative flex items-center">
+        <Input 
+          label={label}
+          name={name}
+          placeholder={placeholder}
+          iconName="search" 
+          value={query} 
+          onChange={(e) => { 
+            setQuery(e.target.value); 
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          fullWidth
+        />
+        {/* CLEAR SEARCH INPUT BUTTON */}
+        {query && (
+          <button
+            onClick={() => { setQuery(''); onSelect(''); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-primary transition-colors"
+          >
+            <MaterialIcon iconName="cancel" className="text-lg"/>
+          </button>
+        )}
+      </div>
+
+      {isOpen && displaySuggestions.length > 0 && (
+        <ul className="absolute z-50 w-full mt-2 bg-surface border-2 border-border rounded-2xl shadow-main overflow-hidden">
+          {!query && (
+            <li className="flex items-center justify-between px-4 py-2 bg-main-bg/50 border-b border-border">
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted">Recent Searches</span>
+              {/* CLEAR ALL HISTORY BUTTON */}
+              {onClearHistory && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onClearHistory(); }}
+                  className="text-[10px] font-bold text-red-500 hover:underline uppercase italic"
+                >
+                  Clear All
+                </button>
+              )}
+            </li>
+          )}
+          
+          {displaySuggestions.map((item) => (
+            <li 
+              key={item}
+              className="group flex items-center justify-between px-4 py-2 text-sm hover:bg-primary/5 cursor-pointer text-main-text border-b border-border last:border-0 transition-colors">
+              <div 
+                className="flex-1 py-1 font-medium" 
+                onClick={() => {
+                  setQuery(item);
+                  setIsOpen(false);
+                  onSelect(item); 
+                }}
+              >
+                {item}
+              </div>
+
+              {onDeleteSuggestion && (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSuggestion(item);
+                  }}
+                  className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 text-muted hover:text-red-500 transition-all"
+                >
+                  <MaterialIcon iconName='close' className='text-sm'/>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+
+//PASSWORD INPUT WITH EYE ICON SHOW PASSWORD
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, name, error, iconName = "lock", fullWidth = false, className = '', ...props }, ref) => {
     const id = useId();
@@ -102,6 +214,18 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
+//CUSTOM PHONE INPUT
+interface PhoneInputProps {
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+  label?: string;
+  name?: string;
+  error?: string;
+  fullWidth?: boolean;
+  className?: string;
+  disabled?: boolean;
+}
 
 export const CustomPhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
   ({ label, name, error, fullWidth = false, className = '', value, onChange, disabled }, ref) => {

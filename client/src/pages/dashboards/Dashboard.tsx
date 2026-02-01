@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import MainLayout from "../../components/layouts/MainLayout";
 import { 
   MaterialIcon, 
-  Button, 
+  Button,
+  DisplayContainer, 
   Table, TableHeader, TableBody, TableRow, TableCell,
   SkeletonBox,
 } from "../../components/ui";
@@ -21,6 +22,15 @@ const Dashboard = () => {
     { label: "Storage Capacity", value: "84%", icon: "storage", color: "text-blue-500" },
     { label: "System Uptime", value: "99.9%", icon: "sensors", color: "text-green-500" },
     { label: "Pending Tasks", value: "05", icon: "pending_actions", color: "text-yellow-500" },
+  ];
+
+  const DUMMY_USERS = [
+    { id: 1, name: "Mark Romel", role: "Administrator" },
+    { id: 2, name: "Jane Doe", role: "Project Manager" },
+    { id: 3, name: "John Smith", role: "Developer" },
+    { id: 4, name: "Sarah Connor", role: "Security Specialist" },
+    { id: 5, name: "Bruce Wayne", role: "Lead Designer" },
+    { id: 6, name: "Peter Parker", role: "Junior Developer" },
   ];
 
   const content = (
@@ -107,6 +117,39 @@ const Dashboard = () => {
                 </TableBody>
               </Table>
             )}
+          </div>
+          <div className="p-8">
+            <h1 className="text-2xl font-black uppercase italic tracking-tighter text-main-text mb-8">
+              User List (DisplayContainer Component)
+            </h1>
+
+            <DisplayContainer 
+              items={DUMMY_USERS}
+              renderItem={(user, view) => (
+                <div className={`
+                  bg-surface border border-border rounded-4xl p-6 shadow-main flex transition-all duration-300 hover:border-primary group
+                  w-full h-full
+                  ${view === 'grid' ? 'flex-col text-center items-center justify-center min-h-55' : 'flex-row items-center gap-6'}
+                `}>
+                  {/* Avatar Container */}
+                  <div className="shrink-0 w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black italic text-2xl group-hover:bg-primary group-hover:text-surface transition-colors">
+                    {user.name.charAt(0)}
+                  </div>
+
+                  {/* Text Content Container */}
+                  <div className={`
+                    ${view === 'grid' ? 'mt-4 w-full' : 'flex-1 min-w-0'}
+                  `}>
+                    <p className="font-black uppercase italic tracking-tighter text-main-text truncate">
+                      {user.name}
+                    </p>
+                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1 truncate">
+                      {user.role}
+                    </p>
+                  </div>
+                </div>
+              )}
+            />
           </div>
         </div>
 

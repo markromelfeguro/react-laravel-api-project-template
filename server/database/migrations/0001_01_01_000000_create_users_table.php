@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('role')->default("user");
             $table->rememberToken();
             $table->timestamps();
+
+            //Indexex
+            $table->index('name');
+            $table->index('role');
         });
 
         Schema::create('user_profiles', function (Blueprint $table) {

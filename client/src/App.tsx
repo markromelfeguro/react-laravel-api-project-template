@@ -3,7 +3,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAuth, ProtectedRoute, RoleGuard } from "./features/auth";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LoadingSpinner } from "./components/ui";
-import Logo from './assets/Logo MRF.png';
 import WithSuspense from "./utils/WithSuspense";
 import NotFoundPage from "./pages/404";
 
@@ -12,6 +11,7 @@ const Welcome = React.lazy(() => import("./pages/Welcome"));
 const Docs = React.lazy(() => import("./pages/Docs"));
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Dashboard = React.lazy(() => import("./pages/dashboards/Dashboard"));
+const UserManagement = React.lazy(() => import("./pages/admin/UserManagement"));
 const MyProfile = React.lazy(() => import("./pages/profile/MyProfile"));
 
 const routers = createBrowserRouter([
@@ -32,12 +32,21 @@ const routers = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <Dashboard />,
         children: [
           {
             path: "dashboard",
             element: WithSuspense(Dashboard),
             handle: { breadcrumb: "Dashboard" }
+          },
+        ]
+      },
+      {
+        element: <RoleGuard allowedRoles={["superadmin", "admin"]} />,
+        children: [
+          {
+            path: "user-management",
+            element: WithSuspense(UserManagement),
+            handle: { breadcrumb: "User Management" }
           },
         ]
       },
@@ -48,7 +57,6 @@ const routers = createBrowserRouter([
       }
     ]
   },
-
 
   { path: "*", element: <NotFoundPage /> },
 ]);
@@ -61,7 +69,6 @@ const App = () => {
         <div className="fixed inset-0 bg-main-bg flex items-center justify-center z-[9999">
           <LoadingSpinner 
             size="xlg" 
-            logo={Logo}
             text="Initializing MRF Core"
             color="primary"
           />

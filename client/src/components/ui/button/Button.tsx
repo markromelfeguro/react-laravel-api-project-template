@@ -5,7 +5,7 @@ import { LoadingSpinner, type SpinnerType } from '../LoadingSpinner';
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
 type IconPosition = 'left' | 'right';
-type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'; // Added tooltip positioning
+type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -17,8 +17,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   iconType?: 'filled' | 'outlined' | 'rounded' | 'sharp' | 'two-tone';
   iconPosition?: IconPosition;
   fullWidth?: boolean;
-  tooltip?: string; // New optional prop
-  tooltipPosition?: TooltipPosition; // New optional prop
+  tooltip?: string;
+  tooltipPosition?: TooltipPosition;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

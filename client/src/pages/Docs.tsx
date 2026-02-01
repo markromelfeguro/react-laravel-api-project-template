@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { 
   MaterialIcon,
   Badge, 
   Button,
-  Table, TableHeader, TableBody, TableRow, TableCell,
+  Table, TableHeader, TableBody, TableRow, TableCell, TablePagination,
   LoadingSpinner,
   Image, 
   SkeletonBox,
@@ -108,6 +108,87 @@ const Docs = () => {
       {code}
     </pre>
   );
+
+  //TABLE IMPLEMENTATION
+
+  const DUMMY_MODULES = [
+    { id: 1, module: "BreadCrumbs", value: "Automatic", status: "success", label: "Success" },
+    { id: 2, module: "Integrity", value: "100%", status: "warning", label: "Warning" },
+    { id: 3, module: "Authentication", value: "Sanctum", status: "success", label: "Secure" },
+    { id: 4, module: "File Upload", value: "S3/Local", status: "danger", label: "Error" },
+    { id: 5, module: "Localization", value: "En/Ph", status: "info", label: "Configured" },
+
+    { id: 6, module: "API Rate Limit", value: "60/min", status: "success", label: "Healthy" },
+    { id: 7, module: "Cache", value: "Redis", status: "success", label: "Active" },
+    { id: 8, module: "Queue", value: "Running", status: "info", label: "Processing" },
+    { id: 9, module: "Email Service", value: "SMTP", status: "warning", label: "Delayed" },
+    { id: 10, module: "Notifications", value: "Enabled", status: "success", label: "Live" },
+
+    { id: 11, module: "Logging", value: "Daily", status: "success", label: "Recording" },
+    { id: 12, module: "Monitoring", value: "Enabled", status: "info", label: "Observing" },
+    { id: 13, module: "Backup", value: "Weekly", status: "warning", label: "Pending" },
+    { id: 14, module: "Scheduler", value: "Cron", status: "success", label: "Running" },
+    { id: 15, module: "Database", value: "MySQL", status: "success", label: "Connected" },
+
+    { id: 16, module: "Search", value: "Elastic", status: "info", label: "Indexed" },
+    { id: 17, module: "Payments", value: "Stripe", status: "danger", label: "Failed" },
+    { id: 18, module: "Webhooks", value: "Listening", status: "success", label: "Ready" },
+    { id: 19, module: "Analytics", value: "Tracking", status: "info", label: "Collecting" },
+    { id: 20, module: "Session", value: "Active", status: "success", label: "Valid" },
+
+    { id: 21, module: "Firewall", value: "Enabled", status: "success", label: "Protected" },
+    { id: 22, module: "CDN", value: "CloudFront", status: "info", label: "Optimized" },
+    { id: 23, module: "Environment", value: "Production", status: "warning", label: "Live" },
+    { id: 24, module: "Versioning", value: "v1.2.3", status: "success", label: "Stable" },
+    { id: 25, module: "Maintenance", value: "Off", status: "success", label: "Normal" },
+  ];
+
+
+  //Sorting State
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
+    key: 'module',
+    direction: 'asc'
+  });
+
+  //Pagination State
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalResults = DUMMY_MODULES.length;
+  const totalPages = Math.ceil(totalResults / pageSize);
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
+  // Logic for handling Table Header Sorting
+  const handleSort = (key: string) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const processedData = useMemo(() => {
+    let items = [...DUMMY_MODULES];
+    
+    // Sort
+    items.sort((a: any, b: any) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    
+
+    // Paginate
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    
+    return items.slice(startIndex, endIndex);
+
+  }, [sortConfig, currentPage, pageSize]);
+
+  //TABLE IMPLEMENTATION
 
   const content = (
     <div className="min-h-screen bg-main-bg text-main-text transition-all duration-500 pb-32">
@@ -469,32 +550,50 @@ const [rental, setRental] = useState<RentalRange>(getDefaultRentalRange);
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableCell isHeader>Module</TableCell>
-                    <TableCell isHeader>Value</TableCell>
-                    <TableCell isHeader>Badge</TableCell>
+                    <TableCell 
+                      isHeader 
+                      sortKey="module" 
+                      currentSort={sortConfig} 
+                      onSort={handleSort}>
+                      Module
+                    </TableCell>
+                    <TableCell 
+                      isHeader 
+                      sortKey="value" 
+                      currentSort={sortConfig} 
+                      onSort={handleSort}>
+                      Value
+                    </TableCell>
+                    <TableCell isHeader>Badge Status</TableCell>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
-                  <TableRow onClick={() => {}}>
-                    <TableCell className="font-bold uppercase italic">BreadCrumbs</TableCell>
-                    <TableCell>Automatic</TableCell>
-                    <TableCell>
-                      <Badge variant="success">
-                        Success
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow onClick={() => {}}>
-                    <TableCell className="font-bold uppercase italic">Integrity</TableCell>
-                    <TableCell>100%</TableCell>
-                    <TableCell>
-                      <Badge variant="warning">
-                        Warning
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
+                  {processedData.map((item) => (
+                    <TableRow key={item.id} onClick={() => console.log(item.module)}>
+                      <TableCell className="font-bold uppercase italic text-primary">
+                        {item.module}
+                      </TableCell>
+                      <TableCell>{item.value}</TableCell>
+                      <TableCell>
+                        <Badge variant={item.status as any}>
+                          {item.label}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
+
+              {/* Pagination */}
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalResults={totalResults}
+                pageSize={pageSize}
+                onPageChange={(page) => setCurrentPage(page)}
+                onPageSizeChange={handlePageSizeChange}
+              />
             </div>
             <UsageBlock code={`<Table>\n  <TableHeader>\n    <TableRow>\n      <TableCell isHeader>...</TableCell>\n    </TableRow>\n  </TableHeader>\n  <TableBody>\n    <TableRow onClick={() => {}}>\n      <TableCell>...</TableCell>\n    </TableRow>\n  </TableBody>\n</Table>`} />
             <UsageBlock code={` import { Badge } from "../components/ui";\n// variants = 'brand' | 'alternative' | 'gray' | 'danger' | 'success' | 'warning'\n<Badge variant="brand">Verified</Badge>`} />

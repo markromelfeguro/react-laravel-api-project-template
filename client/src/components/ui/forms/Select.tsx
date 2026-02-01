@@ -1,71 +1,51 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useId } from 'react';
 import { MaterialIcon } from '../MaterialIcon';
-import { Input } from './Input';
 import { Checkbox } from './SelectionControls';
 
 import { useOnClickOutside } from '../../../hooks/useOnClickOutside';
 
 
-// --- SEARCH INPUT WITH SUGGESTIONS ---
-interface SearchInputProps {
-  suggestions: string[];
-  onSelect: (value: string) => void;
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
-  name?: string;
-  placeholder?: string;
+  options: { value: string; label: string }[];
+  error?: string;
+  fullWidth?: boolean;
 }
 
-export const SearchInput = ({ suggestions, onSelect, label, name, placeholder }: SearchInputProps) => {
-  const [query, setQuery] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  ({ label, options, error, fullWidth = false, className = '', ...props }, ref) => {
+    const id = useId();
 
-  const filtered = suggestions.filter(item => 
-    item.toLowerCase().includes(query.toLowerCase())
-  );
+    const baseSelectStyles = "bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-40 appearance-none";
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div ref={containerRef} className="relative w-full">
-      <Input 
-        label={label}
-        name={name}
-        placeholder={placeholder}
-        iconName="search" 
-        value={query} 
-        onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
-        onFocus={() => setIsOpen(true)}
-        fullWidth
-      />
-      {isOpen && query && filtered.length > 0 && (
-        <ul className="absolute z-50 w-full mt-2 bg-surface border-2 border-border rounded-2xl shadow-main overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-          {filtered.map((item) => (
-            <li 
-              key={item}
-              className="px-4 py-3 text-sm hover:bg-main-bg cursor-pointer text-main-text transition-colors border-b border-border last:border-0 font-medium"
-              onClick={() => {
-                setQuery(item);
-                setIsOpen(false);
-                onSelect(item);
-              }}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
+    return (
+      <div className={`${fullWidth ? 'w-full' : 'w-72'} flex flex-col gap-1.5`}>
+        {label && (
+          <label htmlFor={id} className="text-xs text-primary font-black uppercase tracking-widest ml-1 italic">
+            {label}
+          </label>
+        )}
+        <div className="relative w-fit flex items-center group">
+          <select
+            id={id}
+            ref={ref}
+            className={`${baseSelectStyles} ${error ? 'border-red-500' : ''} ${className}`}
+            {...props}>
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-1 pointer-events-none text-muted">
+            <MaterialIcon iconName='expand_more' />
+          </div>
+        </div>
+        {error && <span className="text-[10px] font-black text-red-500 ml-1 uppercase italic">{error}</span>}
+      </div>
+    );
+  }
+);
 
 // --- MULTI-SELECT DROPDOWN ---
 interface MultiSelectProps {
@@ -95,8 +75,7 @@ export const MultiSelect = ({ label, name, options, selectedValues, onChange }: 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all focus:border-primary"
-      >
+        className="w-full flex items-center justify-between bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all focus:border-primary">
         <span className="truncate">
           {selectedValues.length > 0 
             ? `${selectedValues.length} items selected` 
@@ -111,8 +90,7 @@ export const MultiSelect = ({ label, name, options, selectedValues, onChange }: 
             <div 
               key={opt.value}
               className="flex items-center gap-2 p-2 hover:bg-main-bg rounded-xl transition-colors cursor-pointer"
-              onClick={() => toggleOption(opt.value)}
-            >
+              onClick={() => toggleOption(opt.value)}>
               <Checkbox 
                 label={opt.label}
                 name={name} 
