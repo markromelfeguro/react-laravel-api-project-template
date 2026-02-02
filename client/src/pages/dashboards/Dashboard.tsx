@@ -3,6 +3,7 @@ import MainLayout from "../../components/layouts/MainLayout";
 import { 
   MaterialIcon, 
   Button,
+  RichTextEditor,
   DisplayContainer, 
   Table, TableHeader, TableBody, TableRow, TableCell,
   SkeletonBox,
@@ -11,6 +12,8 @@ import { notify } from "../../utils/notify";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
+
+  const [bio, setBio] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1200);
@@ -151,6 +154,12 @@ const Dashboard = () => {
               )}
             />
           </div>
+          <RichTextEditor 
+            label="Rich Text Edit"
+            value={bio}
+            onChange={(content) => setBio(content)}
+            placeholder="Write something impressive..."
+          />
         </div>
 
         {/* SYSTEM STATUS / QUICK ACTIONS */}

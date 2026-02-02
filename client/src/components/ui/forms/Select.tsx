@@ -16,7 +16,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, options, error, fullWidth = false, className = '', ...props }, ref) => {
     const id = useId();
 
-    const baseSelectStyles = "bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-40 appearance-none";
+    const baseSelectStyles = "w-full bg-surface text-main-text border-border rounded-2xl border-2 px-4 py-3 text-sm transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-40 appearance-none";
 
     return (
       <div className={`${fullWidth ? 'w-full' : 'w-72'} flex flex-col gap-1.5`}>
@@ -25,7 +25,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
-        <div className="relative w-fit flex items-center group">
+        <div className="relative w-full flex items-center group">
           <select
             id={id}
             ref={ref}

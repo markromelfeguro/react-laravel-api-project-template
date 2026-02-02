@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import MainLayout from "../../components/layouts/MainLayout";
+import MainLayout from "../../../components/layouts/MainLayout";
 import {
   Button,
   Checkbox,
@@ -7,13 +7,16 @@ import {
   LoadingSpinner,
   Modal,
   Table, TableHeader, TableBody, TableRow, TableCell, TablePagination,
-} from "../../components/ui";
-import { notify } from "../../utils/notify";
-import UserService from "../../features/users/api/UserService";
-import type { User } from "../../features/users/types/user.types";
-import { useSearchHistory } from "../../hooks/useSearchHistory";
+} from "../../../components/ui";
+import { notify } from "../../../utils/notify";
+import type { User } from "../../../features/users/types/user.types";
+import { useSearchHistory } from "../../../hooks/useSearchHistory";
+import {UserService, UserView} from "../../../features/users/index";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../../../routes/path";
 
 const UserManagement = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +25,13 @@ const UserManagement = () => {
   const [deleteTarget, setDeleteTarget] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [targetUser, setTargetUser] = useState<User | undefined>(undefined);
+  const [modalType, setModalType] = useState<'view' | 'form' | 'none'>('none');
+
+  const openView = (user: User) => {
+    setTargetUser(user);
+    setModalType('view');
+  };
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -117,17 +127,18 @@ const UserManagement = () => {
   const executeDeletion = async () => {
     setIsDeleting(true);
     try {
-      // API Call: await UserService.batchDelete(deleteTarget);
-      
+      if (deleteTarget.length === 1) {
+        await UserService.delete(deleteTarget[0]);
+      } else {
+        
+        await UserService.deleteBulk(deleteTarget);
+      }
       notify.success(`${deleteTarget.length} account(s) permanently purged.`);
-      
       setSelectedUserIds(prev => prev.filter(id => !deleteTarget.includes(id)));
-      
       setDeleteTarget([]);
-      
       fetchUsers();
     } catch (error) {
-      notify.error("Decommissioning failed.");
+      console.error(error);
     } finally {
       setIsDeleting(false);
       setIsModalOpen(false);
@@ -149,7 +160,10 @@ const UserManagement = () => {
             }}
           />
         </div>
-        <Button variant="primary" iconName="person_add">Add User</Button>
+        <Button variant="primary" iconName="person_add" 
+          onClick={() => navigate(`${PATHS.APP.ROOT}/${PATHS.APP.USER_MANAGEMENT.ROOT}/${PATHS.APP.USER_MANAGEMENT.CREATE}`)}>
+            Add User
+        </Button>
       </div>
 
       <div className="bg-surface rounded-3xl border border-border shadow-main overflow-hidden">
@@ -216,8 +230,31 @@ const UserManagement = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="md" iconName="edit" className="text-blue-500! hover:bg-blue-500/10!" tooltip="Edit"/>
-                      <Button onClick={() => confirmSingleDelete(user.id)} variant="ghost" size="md" iconName="delete" className="text-red-500 hover:bg-red-500/10!" tooltip="Delete"/>
+                      <Button 
+                        variant="ghost" 
+                        size="md" 
+                        iconName="visibility" 
+                        className="text-yellow-500! hover:bg-yellow-500/10!" 
+                        tooltip="View"
+                        onClick={() => openView(user)}
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="md" 
+                        iconName="edit" 
+                        className="text-blue-500! hover:bg-blue-500/10!" 
+                        tooltip="Edit"
+                        onClick={() => navigate(
+                          `${PATHS.APP.ROOT}/${PATHS.APP.USER_MANAGEMENT.ROOT}/${user.id}/edit`
+                        )}
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="md" iconName="delete" 
+                        className="text-red-500 hover:bg-red-500/10!" 
+                        tooltip="Delete"
+                        onClick={() => confirmSingleDelete(user.id)}
+                        />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -247,7 +284,7 @@ const UserManagement = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={deleteTarget.length > 1 ? "Bulk Purge Confirmation" : "Confirm Deletion"}
+        title={deleteTarget.length > 1 ? "Bulk Delete Confirmation" : "Confirm Deletion"}
         size="md"
         primaryAction={{
           label: "Yes, Delete it.",
@@ -291,6 +328,16 @@ const UserManagement = () => {
             </p>
           </div>
         </div>
+      </Modal>
+      <Modal 
+        isOpen={modalType === 'view'} 
+        onClose={() => {
+          setModalType('none');
+          setTargetUser(undefined);
+        }}
+        title="User Profile"
+        size="md">
+        {targetUser && <UserView user={targetUser} />}
       </Modal>
     </div>
   );

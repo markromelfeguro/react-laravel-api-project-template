@@ -203,6 +203,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               options={pageSizeOptions}
               className="py-1 text-sm rounded-xl"
+              fullWidth
             />
           </div>
         </div>

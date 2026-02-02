@@ -22,8 +22,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(UserController::class)->prefix('users')->group( function () {
         Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('{slug}/show', 'show');
         Route::put('{slug}/update', 'update');
         Route::delete('{slug}/delete', 'destroy');
+        Route::delete('bulk-delete', 'bulkDestroy');
         Route::post('switch-theme', 'switchTheme');
     });
 

@@ -49,7 +49,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-
+        $user->recordActivity('Authentication', 'User successfully logged into the system.');
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
@@ -62,12 +62,15 @@ class AuthController extends Controller
      * Logout the user out of the application.
      */
     public function logout(Request $request)
-    {
-        Auth::guard('web')->logout();
+    {   
+        $user = Auth::user();
 
+        Auth::guard('web')->logout();
+    
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
+        
+        $user->recordActivity('Authentication', 'User successfully logged out from the system.');
         return $this->success(null, 'You have logged out successfully.');
     }
 

@@ -9,7 +9,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'superadmin' | 'admin' | 'customer';
   profile?: UserProfile;
   created_at: string;
 }

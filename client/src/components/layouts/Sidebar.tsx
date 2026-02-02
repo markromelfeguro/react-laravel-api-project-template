@@ -20,9 +20,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     {
       group: "System",
       items: [
-        { name: "System Config", icon: "settings", path: "/app/settings" },
         { name: "Audit Logs", icon: "change_history", path: "/app/audit-logs" },
         { name: "Activity Logs", icon: "history", path: "/app/activity-logs" },
+        { name: "System Config", icon: "settings", path: "/app/settings-config" },
       ],
     },
   ];

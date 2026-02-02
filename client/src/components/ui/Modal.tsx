@@ -62,9 +62,8 @@ const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-main-bg/60 backdrop-blur-sm transition-all"
+            className="fixed inset-0 bg-main-bg/40 backdrop-blur-sm transition-all"
           />
-
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -77,12 +76,14 @@ const Modal: React.FC<ModalProps> = ({
               <h2 className="text-xl font-black uppercase italic tracking-tighter text-main-text">
                 {title}
               </h2>
-              <button 
+              <Button
+                variant="ghost"
+                tooltip="Close"
+                tooltipPosition="left"
                 onClick={onClose}
-                className="p-2 hover:bg-main-bg rounded-xl transition-all text-muted hover:text-primary active:scale-95"
-              >
+                className="hover:bg-main-bg rounded-xl transition-all text-muted hover:text-primary active:scale-95">
                 <MaterialIcon iconName="close" size={24} />
-              </button>
+              </Button>
             </div>
 
             {/* Content (Scrollable) */}

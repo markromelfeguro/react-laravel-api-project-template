@@ -12,7 +12,7 @@ const UserService = {
     ),
 
     getOne: (slug: string) => 
-        handleRequest(AxiosInstance.get(`${BASE_PREFIX}/${slug}`), 
+        handleRequest(AxiosInstance.get(`${BASE_PREFIX}/${slug}/show`), 
         "Failed to fetch user details"
     ),
 
@@ -21,9 +21,9 @@ const UserService = {
         "Failed to create user"
     ),
 
-    update: (id: string, data: FormData, onProgress?: (percent: number) => void) => 
+    update: (slug: string, data: FormData, onProgress?: (percent: number) => void) => 
         handleRequest(
-        AxiosInstance.post(`/${BASE_PREFIX}/${id}/update`, data, {
+        AxiosInstance.post(`/${BASE_PREFIX}/${slug}/update`, data, {
             onUploadProgress: (progressEvent) => {
                 if (onProgress && progressEvent.total) {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -34,9 +34,14 @@ const UserService = {
         "Failed to synchronize profile"
     ),
 
-    delete: (slug: string) => 
+    delete: (slug: string | number) => 
         handleRequest(AxiosInstance.delete(`${BASE_PREFIX}/${slug}/delete`), 
         "Failed to delete user"
+    ),
+
+    deleteBulk: (ids: number[]) => 
+        handleRequest(AxiosInstance.post(`${BASE_PREFIX}/bulk-delete`, { ids, _method: 'DELETE' }), 
+        "Failed to purge selected users"
     ),
 
     switchTheme: (theme: 'dark' | 'light' | 'system') => 

@@ -9,7 +9,7 @@ import {
   Button, 
   Input,
   CustomPhoneInput,
-  Textarea, 
+  RichTextEditor, 
   FileUpload,
   Modal,
 } from "../../components/ui";
@@ -104,6 +104,9 @@ const MyProfile = () => {
     }
   };
 
+  const existingAvatar = user.profile?.avatar 
+  ? `${import.meta.env.VITE_STORAGE_URL}/${user.profile.avatar}` 
+  : null;
   
   const content = (
     <div className="space-y-12 pb-20 animate-reveal">
@@ -128,10 +131,11 @@ const MyProfile = () => {
               label="Avatar"
               name="avatar"
               onFileSelect={(files) => setFormData({...formData, avatar: files[0]})}
-              accept="image/*"
+              accept="image/jpeg,png,jpg"
               error={errors.avatar?.[0]}
               isUploading={isUpdating && !!formData.avatar}
               progress={uploadProgress}
+              previewUrl={existingAvatar}
             />
           </section>
         </div>
@@ -161,12 +165,12 @@ const MyProfile = () => {
               />
             </div>
 
-            <Textarea 
-              label="Professional Bio"
+            <RichTextEditor 
+              label="Bio"
               name="bio"
-              placeholder="Tell us about your expertise..." 
+              placeholder="Tell us about your expertise..."
               value={formData.bio}
-              onChange={(e) => setFormData({...formData, bio: e.target.value})}
+              onChange={(content) => setFormData({...formData, bio: content})}
               error={errors.bio?.[0]}
             />
 

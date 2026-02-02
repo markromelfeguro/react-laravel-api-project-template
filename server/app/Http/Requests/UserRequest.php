@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,9 +15,13 @@ class UserRequest extends FormRequest
     public function authorize(): bool
     {
         $currentUser = Auth::user();
-        $targetId = $this->route('id');
+        $targetId = $this->route('slug');
 
-        return $currentUser->role === 'admin' || $currentUser->id == $targetId;
+        if (in_array($currentUser->role, ['superadmin', 'admin'])) {
+            return true;
+        }
+
+        return $currentUser->id == $targetId;
     }
 
     /**
@@ -25,16 +31,24 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $slug = $this->route('slug');
+        $userId = User::where('id', $slug)->value('id');
+
         return [
             'name'   => ['required', 'string', 'max:255'],
+            'email' => [
+                'nullable',          
+                'email',                
+                Rule::unique('users', 'email')->ignore($userId),
+            ],
+            'role'   => [
+                in_array(Auth::user()->role, ['superadmin', 'admin']) ? 'nullable' : 'prohibited',
+                'string', 
+                'in:superadmin,admin,customer'
+            ],
             'bio'    => ['nullable', 'string'],
             'phone'  => ['nullable', 'string', 'phone:PH,INTERNATIONAL', 'max:20'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:30000'],
-            'role'   => [
-                Auth::user()->role === 'admin' ? 'nullable' : 'prohibited', 
-                'string', 
-                'in:user,admin'
-            ],
+            'avatar' => ['nullable', 'image', 'max:30000'],
         ];
     }
     public function messages(): array
@@ -44,7 +58,6 @@ class UserRequest extends FormRequest
             'phone.max'   => 'The contact number must not exceed 20 characters.',
             'role.prohibited' => 'You are not authorized to modify security roles.',
             'avatar.image' => 'The avatar must be a valid image file.',
-            'avatar.mimes' => 'The system only accepts .jpeg, .png, and .jpg protocols for visual assets.',
             'avatar.max'   => 'The avaatar must not exceed 30MB.',
         ];
     }

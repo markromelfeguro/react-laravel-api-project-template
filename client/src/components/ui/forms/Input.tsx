@@ -11,10 +11,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   iconName?: string;
   fullWidth?: boolean;
+  autoComplete?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, name, error, iconName, fullWidth = false, className = '', ...props }, ref) => {
+  ({ label, name, error, iconName, fullWidth = false, autoComplete="auto", className = '', ...props }, ref) => {
     const id = useId();
     const baseInputStyles = "w-full bg-surface text-main-text border-border placeholder:text-muted rounded-2xl border-2 px-4 py-3 text-sm transition-all duration-300 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-40 disabled:cursor-not-allowed";
 
@@ -23,7 +24,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && <label htmlFor={id} className="text-xs text-primary font-bold uppercase tracking-widest ml-1">{label}</label>}
         <div className="relative flex items-center">
           {iconName && <div className="absolute left-4 text-muted"><MaterialIcon iconName={iconName} size={18} /></div>}
-          <input id={id} ref={ref} name={name} className={`${baseInputStyles} ${iconName ? 'pl-11' : ''} ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`} {...props} />
+          <input id={id} ref={ref} name={name} className={`${baseInputStyles} ${iconName ? 'pl-11' : ''} ${error ? 'border-red-500 focus:border-red-500' : ''} ${className}`} {...props} autoComplete={autoComplete}/>
         </div>
         {error && <span className="text-[10px] font-bold text-red-500 ml-1 uppercase">{error}</span>}
       </div>
@@ -79,6 +80,7 @@ export const SearchInput = ({
           label={label}
           name={name}
           placeholder={placeholder}
+          autoComplete="off"
           iconName="search" 
           value={query} 
           onChange={(e) => { 

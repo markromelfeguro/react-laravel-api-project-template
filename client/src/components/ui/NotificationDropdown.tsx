@@ -57,7 +57,7 @@ const NotificationDropdown = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 origin-top-right divide-y divide-border rounded-4xl bg-surface border border-border shadow-main z-50 animate-reveal">
+        <div className="absolute -right-16 mt-3 w-72 sm:w-96 sm:right-0 origin-top-right divide-y divide-border rounded-4xl bg-surface border border-border shadow-main z-50 animate-reveal">
           <div className="px-6 py-4 flex items-center justify-between bg-main-bg/30 rounded-t-4xl">
             <h3 className="text-sm font-black uppercase italic tracking-tighter text-main-text">
               System Alerts

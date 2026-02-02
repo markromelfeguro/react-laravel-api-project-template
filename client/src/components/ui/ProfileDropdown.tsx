@@ -5,6 +5,7 @@ import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 import { MaterialIcon, Image } from '../ui';
 import type { User } from '../../features/users/types/user.types';
 import ChangePasswordModal from '../../features/auth/components/ChangePasswordModal';
+import { PATHS } from '../../routes/path';
 
 const ProfileDropdown = ({ user }: { user: User }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,8 +63,8 @@ const ProfileDropdown = ({ user }: { user: User }) => {
           </div>
           
           <div className="py-2">
-            <Link 
-              to="/app/my-profile" 
+            <Link
+              to={`${PATHS.APP.ROOT}/${PATHS.APP.MY_PROFILE}`}
               className="flex items-center gap-3 px-5 py-3 text-sm text-main-text hover:bg-main-bg transition-colors group">
               <MaterialIcon iconName="account_circle" className="text-muted group-hover:text-primary transition-colors" />
               <span className="font-medium">My Profile</span>
