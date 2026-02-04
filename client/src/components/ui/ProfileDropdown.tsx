@@ -77,15 +77,6 @@ const ProfileDropdown = ({ user }: { user: User }) => {
               <span className="font-medium">Change Password</span>
             </button>
           </div>
-          
-          <div className="py-2">
-            <Link 
-              to="/settings" 
-              className="flex items-center gap-3 px-5 py-3 text-sm text-main-text hover:bg-main-bg transition-colors group">
-              <MaterialIcon iconName="settings_suggest" className="text-muted group-hover:text-primary transition-colors" />
-              <span className="font-medium">Settings & Security</span>
-            </Link>
-          </div>
 
           {/* Action Section */}
           <div className="py-2">

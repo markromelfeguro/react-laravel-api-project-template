@@ -1,11 +1,14 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\NotificationController;
-use App\Http\Controllers\API\SearchHistoryController;
-use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\SystemConfigController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\AuditLogController;
+use App\Http\Controllers\API\ActivityLogController;
+use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\SearchHistoryController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -13,7 +16,11 @@ Route::get('/sanctum/csrf-cookie', function () {
     return response()->noContent();
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::controller(SystemConfigController::class)->prefix('system-configs')->group( function () {
+        Route::get('/',  'index');
+    });
+
+Route::middleware(['check.maintenance', 'auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::prefix('user/auth')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
@@ -42,4 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('read-all', 'markAllAsRead');
         Route::delete('{id}', 'destroy');
     });
+
+
+    Route::controller(SystemConfigController::class)->prefix('system-configs')->group( function () {
+        Route::post('update',  'update');
+    });
+
+    Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+    Route::get('/audit-logs', [AuditLogController::class, 'index']);
 });

@@ -11,7 +11,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const { darkMode, toggleDarkMode } = useTheme();
-  const { user } = useAuth();
+  const { user, siteName } = useAuth();
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-surface border-b border-border transition-colors duration-200">
@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             </Button>
             <Link to="/app/dashboard" className="flex gap-3 items-center">
               <Image src={BrandLogo} alt="Brand Logo" aspectRatio="aspect-square" containerClassName="max-h-8 max-w-8"/>
-              <span className="text-main-text font-black text-lg tracking-tighter uppercase italic hidden sm:block">MRF Project Template</span>
+              <span className="text-main-text font-black text-lg tracking-tighter uppercase italic hidden sm:block">{siteName}</span>
             </Link>
           </div>
 

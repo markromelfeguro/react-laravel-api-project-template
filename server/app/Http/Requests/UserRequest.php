@@ -48,7 +48,7 @@ class UserRequest extends FormRequest
             ],
             'bio'    => ['nullable', 'string'],
             'phone'  => ['nullable', 'string', 'phone:PH,INTERNATIONAL', 'max:20'],
-            'avatar' => ['nullable', 'image', 'max:30000'],
+            'avatar' => ['nullable', 'image', 'dimensions:max_width=5000,max_height=5000', 'max:51200'],
         ];
     }
     public function messages(): array
@@ -57,8 +57,11 @@ class UserRequest extends FormRequest
             'phone.phone' => 'The provided number is not a valid contact format for the Philippines or international protocols.',
             'phone.max'   => 'The contact number must not exceed 20 characters.',
             'role.prohibited' => 'You are not authorized to modify security roles.',
-            'avatar.image' => 'The avatar must be a valid image file.',
-            'avatar.max'   => 'The avaatar must not exceed 30MB.',
+            
+            'avatar.image' => 'The profile picture must be a valid image file (jpeg, png, bmp, gif, or svg).',
+            'avatar.max'   => 'The image size is too large. Please upload an avatar smaller than 30MB.',
+            'avatar.mimes' => 'The profile picture must be a format of: jpeg, png, jpg, or gif.',
+            'avatar.uploaded' => 'The file is too large for the server to process. Please try a smaller image.',
         ];
     }
 }

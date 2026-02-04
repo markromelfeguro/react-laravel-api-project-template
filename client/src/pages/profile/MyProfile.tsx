@@ -14,6 +14,7 @@ import {
   Modal,
 } from "../../components/ui";
 import MyProfileSkeleton from "./components/MyProfileSkeleton";
+import { PATHS } from "../../routes/path";
 
 const MyProfile = () => {
   const { user, logout, loading, updateUser } = useAuth();
@@ -92,10 +93,10 @@ const MyProfile = () => {
   const executeDeletion = async () => {
     setIsDeleting(true);
     try {
-      await UserService.delete(user.id.toString());
-      notify.success("Account permanently purged.");
+      const response = await UserService.delete(user.id.toString());
+      notify.success(response.message);
       logout();
-      navigate("/");
+      navigate(PATHS.HOME);
     } catch (error) {
        console.error(`Decommissioning Error: ${error}`);
     } finally {

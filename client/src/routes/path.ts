@@ -1,6 +1,7 @@
 export const PATHS = {
   HOME: "/",
   DOCS: "/docs",
+  MAINTENANCE: "/maintenance",
   LOGIN: "/login",
   APP: {
     ROOT: "/app",
@@ -10,6 +11,11 @@ export const PATHS = {
       ROOT: "user-management",
       CREATE: "create",
       EDIT: ":slug/edit",
+    },
+    SYSTEM: {
+      ROOT: "system-config",
+      AUDIT_LOGS: "audit-logs",
+      ACTIVITY_LOGS: "activity-logs",
     }
   }
 };

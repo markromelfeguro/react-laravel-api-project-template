@@ -41,7 +41,7 @@ const Dashboard = () => {
       {/* --- HEADER SECTION --- */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter">Command Center</h1>
+          <h1 className="text-primary text-4xl font-black uppercase italic tracking-tighter">Command Center</h1>
           <p className="text-muted text-sm font-medium italic opacity-60">
             System overview and real-time infrastructure metrics.
           </p>
@@ -156,6 +156,7 @@ const Dashboard = () => {
           </div>
           <RichTextEditor 
             label="Rich Text Edit"
+            name="richtexteditor"
             value={bio}
             onChange={(content) => setBio(content)}
             placeholder="Write something impressive..."

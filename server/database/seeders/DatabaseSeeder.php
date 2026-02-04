@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
             'password' => '@Superadmin123',
             'role' => 'superadmin',
         ]);
+
+        $this->call(SystemConfigSeeder::class);
     }
 }

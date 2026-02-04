@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Traits\HasSearchHistory;
 use App\Traits\LogsAudit;
 use App\Traits\TracksActivity;
+use App\Traits\HasSearchHistory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -73,5 +74,13 @@ class User extends Authenticatable
     public function searches()
     {
         return $this->hasMany(SearchHistory::class);
+    }
+
+    public static function isUnderMaintenance(): bool 
+    {
+        $config = DB::table('system_configs')
+                    ->where('key', 'maintenance_mode')
+                    ->first();
+        return $config && filter_var($config->value, FILTER_VALIDATE_BOOLEAN);
     }
 }

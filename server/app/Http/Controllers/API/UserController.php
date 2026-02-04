@@ -155,27 +155,46 @@ class UserController extends Controller
         $currentUser = Auth::user();
         $targetUser = User::findOrFail($id);
 
-        if ($currentUser->id == $id) {
-            return $this->error('You cannot delete your own account from here.', 403);
-        }
-
+        // Permission Check
         if ($currentUser->role !== 'superadmin' && $currentUser->role !== 'admin') {
             return $this->error('You do not have permission to delete users.', 403);
         }
+
+        // Avatar Cleanup
         if ($targetUser->user_profile && $targetUser->user_profile->avatar) {
             Storage::disk('public')->delete($targetUser->user_profile->avatar);
         }
 
-        auth()->user()->recordActivity(
-            'User Management', 
-            "Permanently deleted user account: {$targetUser->name}"
-        );
+        // Check if deleting self
+        $isDeletingSelf = $currentUser->id === $targetUser->id;
 
+        if ($isDeletingSelf) {
+            // Record activity MANUALLY before the user is gone
+            $targetUser->recordActivity(
+                'Account Management', 
+                "User permanently deleted their own account: {$targetUser->name}"
+            );
+            
+            // Logout and invalidate session to prevent token mismatch
+            Auth::guard('web')->logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        } else {
+            // Admin deleting someone else
+            $currentUser->recordActivity(
+                'User Management', 
+                "Admin permanently deleted user account: {$targetUser->name}"
+            );
+        }
+
+        // Perform Delete
+        // Note: If your LogsAudit trait uses the 'deleted' event, 
+        // it will still fire. Ensure that trait handles null users (see below).
         $targetUser->delete();
 
         return $this->success(
             null, 
-            "User has been successfully deleted."
+            "User account has been successfully purged from the system."
         );
     }
     

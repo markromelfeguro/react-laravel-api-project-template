@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useMatches } from 'react-router-dom';
+import { useAuth } from '../features/auth';
 
 interface RouteHandle {
   breadcrumb?: string;
@@ -12,6 +13,7 @@ interface RouteMatch {
 
 export const useTabNotification = (count: number) => {
   const matches = useMatches();
+  const { siteName } = useAuth();
   const originalFavicon = useRef<string | null>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export const useTabNotification = (count: number) => {
       .reverse()
       .find((m) => (m.handle as RouteHandle)?.breadcrumb) as RouteMatch | undefined;
 
-    const baseTitle = currentMatch?.handle?.breadcrumb || "MRF Core";
+    const baseTitle = currentMatch?.handle?.breadcrumb || siteName;
 
     document.title = count > 0 ? `(${count}) ${baseTitle}` : baseTitle;
 
@@ -59,5 +61,5 @@ export const useTabNotification = (count: number) => {
         }
       }
     };
-  }, [count, matches]);
+  }, [count, matches, siteName]);
 };

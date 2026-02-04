@@ -24,10 +24,10 @@ export async function handleRequest<T>(
     } catch (error: any) {
         const status = error.response?.status;
 
-        const alreadyHandled = [401, 403, 500, 502, 503, 504].includes(status);
+        const silentStatuses = [401, 422, 503];
         
-        if (!alreadyHandled && status !== 422) {
-            notify.error(errorMessage);
+        if (!silentStatuses.includes(status)) {
+            notify.error(errorMessage || "An unexpected error occurred.");
         }
         
         throw error;

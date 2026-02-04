@@ -93,10 +93,9 @@ const Welcome = () => {
 
       <main className="max-w-7xl mx-auto px-6 space-y-48">
         
-        {/* --- SECTION 1: SYSTEM PREVIEW --- */}
         <section ref={el => { revealRefs.current[1] = el as HTMLDivElement }} className="reveal-step">
           <div className="bg-surface border border-border rounded-[3rem] p-12 shadow-2xl overflow-hidden relative group">
-             {/* Abstract background glow that reacts to your --primary color */}
+            
              <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-colors duration-700"></div>
              
              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -161,7 +160,7 @@ const Welcome = () => {
                     <SearchInput 
                       suggestions={['Admin', 'Student', 'Faculty']} 
                       placeholder="Access Level..." 
-                      onSelect={(val) => console.log(val)} // Fixed the TS Error here
+                      onSelect={(val) => console.log(val)}
                     />
                  </div>
                  <div className="flex gap-8 items-center p-6 bg-main-bg/40 rounded-2xl border border-border">
@@ -178,7 +177,7 @@ const Welcome = () => {
 
       <footer className="mt-48 pt-20 border-t border-border text-center">
         <p className="text-primary text-[10px] font-black tracking-[1em] uppercase">MRF CORE • {new Date().getFullYear()}</p>
-        <p className="text-muted text-[10px] font-bold uppercase mt-4 opacity-40">Designed for Capiz State University - College of Computer Studies</p>
+        <p className="text-muted text-[10px] font-bold uppercase mt-4 opacity-40">Filamer Christian University, Inc. - College of Computer Studies</p>
       </footer>
     </div>
   );

@@ -17,8 +17,12 @@ trait LogsAudit
     }
 
     public function logEvent(string $event) {
+        
+        $causer = auth()->user();
+        $isSelfDelete = ($event === 'deleted' && $causer && $causer->id === $this->id);
+
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $isSelfDelete ? null : ($causer ? $causer->id : null),
             'event' => $event,
             'auditable_id' => $this->id,
             'auditable_type' => get_class($this),

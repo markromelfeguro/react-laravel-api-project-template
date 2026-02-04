@@ -1,9 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AuthService from "../api/AuthService";
 import { notify } from "../../../utils/notify";
+import AxiosInstance from "../../../api/AxiosInstance";
 
 interface AuthContextProps {
   user: any;
+  siteName: string;
+  setSiteName: (name: string) => void;
   login: (login_credential: string, password: string, remember_me: boolean) => Promise<void>;
   updateUser: (updatedUser: any) => void;
   logout: () => void;
@@ -12,52 +15,106 @@ interface AuthContextProps {
   justLoggedOut: boolean;
   setJustLoggedOut: (value: boolean) => void;
   hasPermission: (allowedRoles: string[]) => boolean;
+  refreshSettings: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
+  const [siteName, setSiteName] = useState("Loading...");
   const [loading, setLoading] = useState(true);
   const [justLoggedOut, setJustLoggedOut] = useState(false);
+  
+  // Guard for single-toast per session loss
+  const hasNotifiedError = useRef(false);
 
-  // Check user role permissions
-  const hasPermission = useCallback((allowedRoles: string[]) => {
-    return user && allowedRoles.includes(user.role);
-  }, [user]);
+  // Unified session expiry handler
+  const handleSessionExpired = useCallback(() => {
+  // 1. Check if we already have a lock in this specific app session (ref)
+  if (hasNotifiedError.current) return;
+  
+  // 2. Check if we already have a lock in this browser session (sessionStorage)
+  if (sessionStorage.getItem('session_expired_toast')) return;
 
-  // to determine if user is logged in
-  const isLoggedIn = !!user;
+  // 3. Set the locks IMMEDIATELY (Atomic operation)
+  hasNotifiedError.current = true;
+  sessionStorage.setItem('session_expired_toast', 'true');
 
-  // Initialize Auth Fetch current session on app load
+  // 4. Finally, trigger the notification
+  notify.error("Your session has expired. Please log in again.");
+}, []);
+
+  // Unified Config Fetcher
+  const refreshSettings = useCallback(async () => {
+    try {
+      const res = await AxiosInstance.get('/system-configs');
+      const siteConfig = res.data.data.find((c: any) => c.key === 'site_name');
+      if (siteConfig) setSiteName(siteConfig.value);
+    } catch (error: any) {
+      setSiteName("MRF Template");
+      // Only notify if we haven't already
+      if (error.response?.status === 401) {
+        handleSessionExpired();
+      }
+    }
+  }, [handleSessionExpired]);
+
+  // Sequential Boot Initialization
   useEffect(() => {
-    const initializeAuth = async () => {
+    let isMounted = true;
+
+    const initializeApp = async () => {
       try {
-        const userData = await AuthService.me();
-        setUser(userData.data);
-      } catch (error) {
-        // If the cookie is invalid or missing, Laravel returns 401
-        // and we ensure the user state is null
-        setUser(null);
+        // Auth Check
+        try {
+          const authRes = await AuthService.me();
+          if (isMounted) {
+              setUser(authRes.data);
+              sessionStorage.removeItem('session_expired_toast');
+              hasNotifiedError.current = false;
+          }
+        } catch (authError: any) {
+          if (isMounted) setUser(null);
+          if (authError.response?.status === 401) {
+            handleSessionExpired();
+          }
+        }
+
+        // Settings Check
+        if (isMounted) {
+            await refreshSettings();
+        }
+
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    initializeAuth();
+    initializeApp();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [handleSessionExpired, refreshSettings]);
+
+  // Post-Reload Notification Handler
+  useEffect(() => {
+    const msg = sessionStorage.getItem('auth_notification');
+    if (msg) {
+      notify.success(msg);
+      sessionStorage.removeItem('auth_notification');
+    }
   }, []);
 
   const login = async (login_credential: string, password: string, remember_me: boolean) => {
-    // AuthService.login handles both CSRF handshake and the POST request
-    const response = await AuthService.login({ 
-        login_credential, 
-        password, 
-        remember_me 
-    });
-    
-    // On success, Laravel sends 'Set-Cookie' header
-    // We simply update the local user state
+    const response = await AuthService.login({ login_credential, password, remember_me });
     const userData = response.data.data.user;
+    
+    // Reset guards on successful login
+    sessionStorage.removeItem('session_expired_toast');
+    hasNotifiedError.current = false;
+
     notify.success(response.data.message);
     setUser(userData);
     setJustLoggedOut(false);
@@ -66,31 +123,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = useCallback(async () => {
     try {
       const response = await AuthService.logout();
-      notify.success(response.message);
+      sessionStorage.setItem('auth_notification', response.data?.message || "Successfully logged out");
     } catch (error) {
-      console.error("Logout request failed, clearing local state anyway.");
+      console.error("Logout failed.");
     } finally {
       setUser(null);
       setJustLoggedOut(true);
+      window.location.href = `/login`;
     }
   }, []);
   
-  const updateUser = useCallback((updatedUser: any) => {
-    setUser(updatedUser);
-  }, []);
+  const updateUser = useCallback((updatedUser: any) => setUser(updatedUser), []);
+  const hasPermission = useCallback((roles: string[]) => user && roles.includes(user.role), [user]);
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        login,
-        updateUser,
-        logout,
-        isLoggedIn,
-        loading,
-        justLoggedOut,
-        setJustLoggedOut,
-        hasPermission,
+        user, siteName, setSiteName, login, updateUser,
+        logout, isLoggedIn: !!user, loading, justLoggedOut,
+        setJustLoggedOut, hasPermission, refreshSettings
       }}
     >
       {!loading && children}
@@ -100,8 +151,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
